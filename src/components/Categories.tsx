@@ -6,86 +6,77 @@ const Categories = () => {
   const categories = [
     {
       icon: PenTool,
-      title: "Copywriting & Content",
-      count: "85+ AI Specialists",
-      description: "Blog posts, sales copy, social media content",
-      color: "from-blue-500 to-blue-600"
+      title: "Content Writing",
+      count: "85+ specialists",
+      description: "Blog posts, sales copy, social media content"
     },
     {
       icon: Code,
-      title: "Programming & Tech",
-      count: "120+ AI Specialists", 
-      description: "Web development, mobile apps, automation",
-      color: "from-green-500 to-green-600"
+      title: "Development",
+      count: "120+ specialists", 
+      description: "Web development, mobile apps, automation"
     },
     {
       icon: Palette,
-      title: "Design & Creative",
-      count: "95+ AI Specialists",
-      description: "Logo design, UI/UX, illustrations",
-      color: "from-purple-500 to-purple-600"
+      title: "Design",
+      count: "95+ specialists",
+      description: "Logo design, UI/UX, illustrations"
     },
     {
       icon: Megaphone,
-      title: "Digital Marketing",
-      count: "70+ AI Specialists",
-      description: "SEO, PPC, social media marketing",
-      color: "from-orange-500 to-orange-600"
+      title: "Marketing",
+      count: "70+ specialists",
+      description: "SEO, PPC, social media marketing"
     },
     {
       icon: BarChart3,
-      title: "Data & Analytics",
-      count: "45+ AI Specialists",
-      description: "Data analysis, reporting, insights",
-      color: "from-indigo-500 to-indigo-600"
+      title: "Data Analysis",
+      count: "45+ specialists",
+      description: "Data analysis, reporting, insights"
     },
     {
       icon: Video,
       title: "Video & Animation",
-      count: "60+ AI Specialists",
-      description: "Video editing, motion graphics, animation",
-      color: "from-red-500 to-red-600"
+      count: "60+ specialists",
+      description: "Video editing, motion graphics, animation"
     },
     {
       icon: Camera,
       title: "Photography",
-      count: "35+ AI Specialists",
-      description: "Photo editing, AI-generated imagery",
-      color: "from-pink-500 to-pink-600"
+      count: "35+ specialists",
+      description: "Photo editing, AI-generated imagery"
     },
     {
       icon: Music,
       title: "Audio & Music",
-      count: "25+ AI Specialists",
-      description: "Music composition, voiceovers, podcasts",
-      color: "from-teal-500 to-teal-600"
+      count: "25+ specialists",
+      description: "Music composition, voiceovers, podcasts"
     }
   ];
 
   return (
     <section id="categories" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Browse AI Specialists by
-            <span className="text-blue-600"> Category</span>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Browse by Category
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Find the perfect AI freelancer for your project. Each category features multiple AI specialists with unique personalities and expertise.
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Find AI specialists with unique personalities and expertise for your specific needs
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((category, index) => (
-            <Card key={index} className="hover-lift border-0 shadow-md bg-white group cursor-pointer transition-all duration-300 hover:shadow-xl">
+            <Card key={index} className="hover:shadow-md transition-shadow duration-200 cursor-pointer border-gray-200">
               <CardHeader className="pb-3">
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${category.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                  <category.icon className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-3">
+                  <category.icon className="w-5 h-5 text-blue-600" />
                 </div>
-                <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                <CardTitle className="text-lg font-semibold text-gray-900">
                   {category.title}
                 </CardTitle>
-                <p className="text-sm font-medium text-blue-600">
+                <p className="text-sm text-blue-600 font-medium">
                   {category.count}
                 </p>
               </CardHeader>
@@ -96,12 +87,6 @@ const Categories = () => {
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <button className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            View All Categories
-          </button>
         </div>
       </div>
     </section>

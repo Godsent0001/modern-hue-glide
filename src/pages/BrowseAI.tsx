@@ -1,13 +1,15 @@
 
 import { useState } from 'react';
-import { Search, Filter, Star, Clock, DollarSign } from 'lucide-react';
+import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const BrowseAI = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [activeTab, setActiveTab] = useState('browse');
 
   const aiFreelancers = [
     {
@@ -20,7 +22,7 @@ const BrowseAI = () => {
       completedProjects: 127,
       responseTime: "< 1 hour",
       skills: ["Blog Posts", "SEO Content", "Social Media"],
-      personality: "Creative and detail-oriented with a passion for storytelling",
+      description: "Specialized in creating engaging content that drives results",
       online: true
     },
     {
@@ -33,7 +35,7 @@ const BrowseAI = () => {
       completedProjects: 89,
       responseTime: "< 30 min",
       skills: ["React", "Node.js", "API Integration"],
-      personality: "Problem-solver who loves clean, efficient code",
+      description: "Building scalable web applications with modern technologies",
       online: true
     },
     {
@@ -46,7 +48,7 @@ const BrowseAI = () => {
       completedProjects: 156,
       responseTime: "< 2 hours",
       skills: ["Logo Design", "Brand Identity", "UI/UX"],
-      personality: "Artistic visionary with an eye for modern aesthetics",
+      description: "Creating visual experiences that communicate effectively",
       online: false
     },
     {
@@ -59,8 +61,44 @@ const BrowseAI = () => {
       completedProjects: 203,
       responseTime: "< 1 hour",
       skills: ["PPC", "Social Media", "Analytics"],
-      personality: "Data-driven strategist with creative campaign ideas",
+      description: "Data-driven marketing strategies that deliver ROI",
       online: true
+    }
+  ];
+
+  const communityPosts = [
+    {
+      id: 1,
+      author: "Alex Thompson",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
+      title: "How to effectively communicate with AI copywriters?",
+      content: "I've been working with AI writers and want to share some tips on getting the best results...",
+      likes: 24,
+      replies: 8,
+      time: "2 hours ago",
+      category: "Tips & Tricks"
+    },
+    {
+      id: 2,
+      author: "Jessica Lee",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=50&h=50&fit=crop&crop=face",
+      title: "Best AI specialists for e-commerce projects?",
+      content: "Looking for recommendations for AI specialists who understand e-commerce well...",
+      likes: 18,
+      replies: 12,
+      time: "5 hours ago",
+      category: "Recommendations"
+    },
+    {
+      id: 3,
+      author: "Mike Johnson",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
+      title: "AI vs Traditional Freelancers - My Experience",
+      content: "After 6 months of using both, here's what I've learned about the differences...",
+      likes: 42,
+      replies: 15,
+      time: "1 day ago",
+      category: "Discussion"
     }
   ];
 
@@ -77,110 +115,210 @@ const BrowseAI = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Browse <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">AI Specialists</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Connect with AI freelancers that have unique personalities and expertise tailored to your project needs
-            </p>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Specialists</h1>
+            <p className="text-gray-600">Connect with AI professionals tailored to your needs</p>
           </div>
 
-          {/* Search and Filters */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search AI specialists..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex items-center gap-4">
-                <Filter className="text-gray-500 w-5 h-5" />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          {/* Tabs */}
+          <div className="mb-8">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('browse')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'browse'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
                 >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category === 'all' ? 'All Categories' : category}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  Browse Specialists
+                </button>
+                <button
+                  onClick={() => setActiveTab('community')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'community'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Community
+                </button>
+              </nav>
             </div>
           </div>
 
-          {/* AI Freelancers Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredFreelancers.map((freelancer) => (
-              <div key={freelancer.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="relative">
-                        <img
-                          src={freelancer.avatar}
-                          alt={freelancer.name}
-                          className="w-16 h-16 rounded-full object-cover"
-                        />
-                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${freelancer.online ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+          {activeTab === 'browse' && (
+            <>
+              {/* Search and Filters */}
+              <Card className="mb-8">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="text"
+                        placeholder="Search specialists..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Filter className="text-gray-500 w-5 h-5" />
+                      <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        {categories.map(category => (
+                          <option key={category} value={category}>
+                            {category === 'all' ? 'All Categories' : category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AI Specialists Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredFreelancers.map((freelancer) => (
+                  <Card key={freelancer.id} className="hover:shadow-lg transition-shadow duration-200">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="relative">
+                            <img
+                              src={freelancer.avatar}
+                              alt={freelancer.name}
+                              className="w-12 h-12 rounded-full object-cover"
+                            />
+                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${freelancer.online ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                          </div>
+                          <div>
+                            <CardTitle className="text-lg">{freelancer.name}</CardTitle>
+                            <p className="text-sm text-blue-600">{freelancer.specialty}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                          <span>{freelancer.rating}</span>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900">{freelancer.name}</h3>
-                        <p className="text-blue-600 font-medium">{freelancer.specialty}</p>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <p className="text-gray-600 text-sm">{freelancer.description}</p>
+
+                      <div className="flex flex-wrap gap-2">
+                        {freelancer.skills.map((skill, index) => (
+                          <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                            {skill}
+                          </span>
+                        ))}
                       </div>
-                    </div>
-                  </div>
 
-                  <p className="text-gray-600 text-sm mb-4 italic">"{freelancer.personality}"</p>
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          <span>{freelancer.responseTime}</span>
+                        </div>
+                        <span className="font-medium">${freelancer.hourlyRate}/hr</span>
+                      </div>
 
-                  <div className="flex items-center space-x-4 mb-4 text-sm text-gray-600">
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                      <span className="font-medium">{freelancer.rating}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <DollarSign className="w-4 h-4 mr-1" />
-                      <span>${freelancer.hourlyRate}/hr</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      <span>{freelancer.responseTime}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {freelancer.skills.map((skill, index) => (
-                      <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex space-x-3">
-                    <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                      Hire Now
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      View Profile
-                    </Button>
-                  </div>
-                </div>
+                      <div className="flex space-x-2 pt-2">
+                        <Button variant="outline" className="flex-1" size="sm">
+                          View Profile
+                        </Button>
+                        <Button className="flex-1" size="sm">
+                          Hire Now
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
+
+          {activeTab === 'community' && (
+            <div className="space-y-6">
+              {/* Community Header */}
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold">Community Discussions</h2>
+                      <p className="text-gray-600">Connect with other users and share experiences</p>
+                    </div>
+                    <Button>Start Discussion</Button>
+                  </div>
+                  <div className="flex items-center space-x-6 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      <span>2,847 members</span>
+                    </div>
+                    <div className="flex items-center">
+                      <MessageSquare className="w-4 h-4 mr-1" />
+                      <span>156 discussions</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Community Posts */}
+              <div className="space-y-4">
+                {communityPosts.map((post) => (
+                  <Card key={post.id} className="hover:shadow-md transition-shadow duration-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <img
+                          src={post.avatar}
+                          alt={post.author}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <h3 className="font-medium text-gray-900">{post.title}</h3>
+                              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                <span>{post.author}</span>
+                                <span>•</span>
+                                <span>{post.time}</span>
+                                <span>•</span>
+                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                                  {post.category}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-gray-600 mb-3">{post.content}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <button className="flex items-center hover:text-red-600 transition-colors">
+                              <Heart className="w-4 h-4 mr-1" />
+                              <span>{post.likes}</span>
+                            </button>
+                            <button className="flex items-center hover:text-blue-600 transition-colors">
+                              <Reply className="w-4 h-4 mr-1" />
+                              <span>{post.replies} replies</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
