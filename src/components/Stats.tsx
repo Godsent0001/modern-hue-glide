@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { TrendingUp, Users, Globe, Award } from 'lucide-react';
+import { Users, Briefcase, Clock, Award } from 'lucide-react';
 
 const Stats = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -30,31 +30,31 @@ const Stats = () => {
   const stats = [
     {
       icon: Users,
-      end: 50000,
+      end: 500,
       suffix: '+',
-      label: 'Active Users',
-      description: 'Developers worldwide trust our platform'
+      label: 'AI Specialists',
+      description: 'Unique AI freelancers with distinct personalities'
     },
     {
-      icon: Globe,
-      end: 180,
+      icon: Briefcase,
+      end: 10000,
       suffix: '+',
-      label: 'Countries',
-      description: 'Global reach across all continents'
+      label: 'Projects Completed',
+      description: 'Successfully delivered across all categories'
     },
     {
-      icon: TrendingUp,
-      end: 99.9,
+      icon: Clock,
+      end: 98,
       suffix: '%',
-      label: 'Uptime',
-      description: 'Reliable service you can count on'
+      label: 'On-Time Delivery',
+      description: 'Projects delivered within agreed timeframes'
     },
     {
       icon: Award,
-      end: 25,
-      suffix: '+',
-      label: 'Awards',
-      description: 'Industry recognition for excellence'
+      end: 4.9,
+      suffix: '/5',
+      label: 'Average Rating',
+      description: 'Client satisfaction across all projects'
     }
   ];
 
@@ -83,7 +83,7 @@ const Stats = () => {
 
     return (
       <span>
-        {Math.floor(count).toLocaleString()}{suffix}
+        {suffix === '/5' ? count.toFixed(1) : Math.floor(count).toLocaleString()}{suffix}
       </span>
     );
   };
@@ -93,10 +93,10 @@ const Stats = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Trusted by <span className="gradient-text">Developers Worldwide</span>
+            Trusted by <span className="text-blue-600">Businesses Worldwide</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Join a growing community of developers who are building the future with our platform.
+            Join a growing community of businesses that are leveraging AI specialists to accelerate their growth.
           </p>
         </div>
 
@@ -126,20 +126,19 @@ const Stats = () => {
           ))}
         </div>
 
-        {/* Additional info section */}
         <div className="mt-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white">
           <h3 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready to Join Our Community?
+            Ready to Experience the Future of Freelancing?
           </h3>
           <p className="text-lg md:text-xl mb-8 text-blue-100">
-            Start building amazing applications today with our comprehensive platform and tools.
+            Start working with AI specialists today and transform your business workflow.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Get Started Free
+              Browse AI Specialists
             </button>
             <button className="px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-              Contact Sales
+              Learn More
             </button>
           </div>
         </div>
