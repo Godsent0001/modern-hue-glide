@@ -1,15 +1,30 @@
-
-import { useState } from 'react';
-import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const BrowseAI = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [activeTab, setActiveTab] = useState('browse');
+  const [selectedFreelancer, setSelectedFreelancer] = useState<any>(null);
+  const [showChat, setShowChat] = useState(false);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+
+  useEffect(() => {
+    if (searchParams.get('search')) {
+      setSearchTerm(searchParams.get('search') || '');
+    }
+    if (searchParams.get('category')) {
+      setSelectedCategory(searchParams.get('category') || 'all');
+    }
+  }, [searchParams]);
 
   const aiFreelancers = [
     {
@@ -18,7 +33,6 @@ const BrowseAI = () => {
       specialty: "Content Writing",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
-      hourlyRate: 25,
       completedProjects: 127,
       responseTime: "< 1 hour",
       skills: ["Blog Posts", "SEO Content", "Social Media"],
@@ -31,7 +45,6 @@ const BrowseAI = () => {
       specialty: "Web Development",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       rating: 4.8,
-      hourlyRate: 45,
       completedProjects: 89,
       responseTime: "< 30 min",
       skills: ["React", "Node.js", "API Integration"],
@@ -44,7 +57,6 @@ const BrowseAI = () => {
       specialty: "Graphic Design",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
-      hourlyRate: 35,
       completedProjects: 156,
       responseTime: "< 2 hours",
       skills: ["Logo Design", "Brand Identity", "UI/UX"],
@@ -57,7 +69,6 @@ const BrowseAI = () => {
       specialty: "Digital Marketing",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
       rating: 4.7,
-      hourlyRate: 40,
       completedProjects: 203,
       responseTime: "< 1 hour",
       skills: ["PPC", "Social Media", "Analytics"],
@@ -113,6 +124,45 @@ const BrowseAI = () => {
     const matchesCategory = selectedCategory === 'all' || freelancer.specialty === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleHire = (freelancer: any) => {
+    setSelectedFreelancer(freelancer);
+    setShowChat(true);
+    setMessages([
+      {
+        id: 1,
+        sender: 'ai',
+        content: `Hi! I'm ${freelancer.name}. I'd love to help you with your ${freelancer.specialty.toLowerCase()} needs. What project are you working on?`,
+        timestamp: new Date()
+      }
+    ]);
+  };
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    const userMessage = {
+      id: messages.length + 1,
+      sender: 'user',
+      content: newMessage,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setNewMessage('');
+
+    // Simulate AI response
+    setTimeout(() => {
+      const aiResponse = {
+        id: messages.length + 2,
+        sender: 'ai',
+        content: "That sounds like an interesting project! I have experience with similar work. Let me know more details about your requirements and timeline.",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, aiResponse]);
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -231,14 +281,18 @@ const BrowseAI = () => {
                           <Clock className="w-4 h-4 mr-1" />
                           <span>{freelancer.responseTime}</span>
                         </div>
-                        <span className="font-medium">${freelancer.hourlyRate}/hr</span>
+                        <span className="font-medium text-green-600">FREE</span>
                       </div>
 
                       <div className="flex space-x-2 pt-2">
                         <Button variant="outline" className="flex-1" size="sm">
                           View Profile
                         </Button>
-                        <Button className="flex-1" size="sm">
+                        <Button 
+                          className="flex-1" 
+                          size="sm"
+                          onClick={() => handleHire(freelancer)}
+                        >
                           Hire Now
                         </Button>
                       </div>
@@ -321,6 +375,71 @@ const BrowseAI = () => {
           )}
         </div>
       </div>
+
+      {/* Chat Interface */}
+      {showChat && selectedFreelancer && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md h-96 flex flex-col">
+            {/* Chat Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center space-x-3">
+                <img
+                  src={selectedFreelancer.avatar}
+                  alt={selectedFreelancer.name}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <div>
+                  <h3 className="font-medium">{selectedFreelancer.name}</h3>
+                  <p className="text-sm text-gray-600">{selectedFreelancer.specialty}</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowChat(false)}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-xs px-3 py-2 rounded-lg ${
+                      message.sender === 'user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-900'
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Message Input */}
+            <form onSubmit={handleSendMessage} className="p-4 border-t">
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <Button type="submit" size="sm">
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

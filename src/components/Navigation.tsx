@@ -2,13 +2,17 @@
 import { useState } from 'react';
 import { Menu, X, Bot, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
+    { name: 'Home', href: '/' },
     { name: 'Browse AI', href: '/browse-ai' },
     { name: 'Categories', href: '#categories' },
     { name: 'How it Works', href: '#how-it-works' },
@@ -24,13 +28,25 @@ const Navigation = () => {
 
   const handleNavClick = (href: string) => {
     if (href.startsWith('#') && location.pathname === '/') {
-      // If it's an anchor link and we're on the home page, scroll to section
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     }
     setIsOpen(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/browse-ai?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setShowSearch(false);
+    }
+  };
+
+  const handleGetStarted = () => {
+    navigate('/browse-ai');
   };
 
   return (
@@ -77,15 +93,34 @@ const Navigation = () => {
             </div>
             
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm" className="hover:bg-blue-50">
-                <Search className="w-4 h-4 mr-2" />
-                Search
-              </Button>
+              {showSearch ? (
+                <form onSubmit={handleSearch} className="flex items-center">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search specialists..."
+                    className="px-3 py-1 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    autoFocus
+                  />
+                  <Button type="submit" size="sm" className="rounded-l-none">
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </form>
+              ) : (
+                <Button variant="ghost" size="sm" className="hover:bg-blue-50" onClick={() => setShowSearch(true)}>
+                  <Search className="w-4 h-4 mr-2" />
+                  Search
+                </Button>
+              )}
               <Button variant="outline" size="sm" className="hover:bg-blue-50">
                 <User className="w-4 h-4 mr-2" />
                 Sign In
               </Button>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg">
+              <Button 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
+                onClick={handleGetStarted}
+              >
                 Get Started Free
               </Button>
             </div>
@@ -133,7 +168,10 @@ const Navigation = () => {
                   <User className="w-4 h-4 mr-2" />
                   Sign In
                 </Button>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Button 
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  onClick={handleGetStarted}
+                >
                   Get Started Free
                 </Button>
               </div>

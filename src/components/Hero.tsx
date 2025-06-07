@@ -4,6 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
+  const scrollToCategories = () => {
+    const element = document.querySelector('#categories');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center bg-white">
       {/* Subtle background */}
@@ -13,7 +20,7 @@ const Hero = () => {
         {/* Badge */}
         <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700 mb-8 border border-blue-100">
           <Sparkles className="w-4 h-4 mr-2" />
-          <span className="text-sm font-medium">100% Free to Start</span>
+          <span className="text-sm font-medium">100% Free Forever</span>
         </div>
 
         {/* Main heading */}
@@ -36,9 +43,9 @@ const Hero = () => {
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="px-8 py-3">
+          <Button size="lg" variant="outline" className="px-8 py-3" onClick={scrollToCategories}>
             <Play className="mr-2 w-5 h-5" />
-            Watch Demo
+            Learn More
           </Button>
         </div>
 
@@ -54,7 +61,7 @@ const Hero = () => {
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900">FREE</div>
-            <div className="text-sm text-gray-600">To Start</div>
+            <div className="text-sm text-gray-600">Forever</div>
           </div>
         </div>
       </div>
