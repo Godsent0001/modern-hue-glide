@@ -14,7 +14,6 @@ const Navigation = () => {
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'Browse AI', href: '/browse-ai' },
-    { name: 'Community', href: '/community' },
     { name: 'Categories', href: '#categories' },
   ];
 
