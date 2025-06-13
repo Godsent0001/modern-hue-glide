@@ -1,9 +1,12 @@
 
-import { Star, Clock, CheckCircle, MessageCircle } from 'lucide-react';
+import { Star, Clock, CheckCircle, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 const AIFreelancers = () => {
+  const [showAll, setShowAll] = useState(false);
+
   const freelancers = [
     {
       id: 1,
@@ -85,6 +88,8 @@ const AIFreelancers = () => {
     }
   ];
 
+  const displayedFreelancers = showAll ? freelancers : freelancers.slice(0, 3);
+
   return (
     <section id="freelancers" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,7 +104,7 @@ const AIFreelancers = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {freelancers.map((freelancer) => (
+          {displayedFreelancers.map((freelancer) => (
             <Card key={freelancer.id} className="hover-lift border border-gray-200 shadow-lg group cursor-pointer">
               <CardHeader className="pb-6">
                 <div className="flex items-center space-x-4">
@@ -165,6 +170,21 @@ const AIFreelancers = () => {
         </div>
 
         <div className="text-center mt-16">
+          <Button
+            onClick={() => setShowAll(!showAll)}
+            variant="outline"
+            className="px-8 py-3 text-lg mr-4"
+          >
+            {showAll ? (
+              <>
+                See Less <ChevronUp className="w-5 h-5 ml-2" />
+              </>
+            ) : (
+              <>
+                See More <ChevronDown className="w-5 h-5 ml-2" />
+              </>
+            )}
+          </Button>
           <Button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-lg">
             Browse All AI Freelancers
           </Button>

@@ -24,6 +24,9 @@ const BrowseAI = () => {
   const subcategories = location.state?.subcategories || [];
 
   useEffect(() => {
+    // Scroll to top when page loads
+    window.scrollTo(0, 0);
+    
     if (searchParams.get('search')) {
       setSearchTerm(searchParams.get('search') || '');
     }
@@ -36,56 +39,167 @@ const BrowseAI = () => {
   }, [searchParams]);
 
   const aiFreelancers = [
+    // Content Writing specialists
     {
       id: 1,
       name: "Sarah Chen",
       specialty: "Content Writing",
       subSpecialty: "Blog Posts",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616c09b4a5b?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
       completedProjects: 127,
       responseTime: "< 1 hour",
       skills: ["Blog Posts", "SEO Content", "Social Media"],
-      description: "Specialized in creating engaging content that drives results",
+      description: "I create engaging blog content that drives traffic and converts readers into customers",
       online: true
     },
     {
       id: 2,
-      name: "Marcus Rodriguez",
-      specialty: "Copywriting",
-      subSpecialty: "Sales Pages",
+      name: "Michael Torres",
+      specialty: "Content Writing",
+      subSpecialty: "Website Content",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       rating: 4.8,
       completedProjects: 89,
-      responseTime: "< 30 min",
-      skills: ["Sales Copy", "Ad Copy", "Email Marketing"],
-      description: "Creating persuasive copy that converts visitors into customers",
+      responseTime: "< 2 hours",
+      skills: ["Website Copy", "Landing Pages", "Product Descriptions"],
+      description: "Specializing in website content that enhances user experience and boosts conversions",
       online: true
     },
     {
       id: 3,
-      name: "Emily Watson",
-      specialty: "Creative Writing",
-      subSpecialty: "Short Stories",
+      name: "Jessica Park",
+      specialty: "Content Writing",
+      subSpecialty: "Articles",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
       completedProjects: 156,
-      responseTime: "< 2 hours",
-      skills: ["Fiction", "Poetry", "Screenplays"],
-      description: "Bringing stories to life with compelling narratives",
+      responseTime: "< 1 hour",
+      skills: ["Research Articles", "Industry News", "Thought Leadership"],
+      description: "Creating well-researched articles that establish authority and engage audiences",
       online: false
     },
+
+    // Copywriting specialists
     {
       id: 4,
-      name: "David Kim",
-      specialty: "Business Writing",
-      subSpecialty: "Business Proposals",
+      name: "Marcus Rodriguez",
+      specialty: "Copywriting",
+      subSpecialty: "Sales Pages",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
       rating: 4.7,
       completedProjects: 203,
+      responseTime: "< 30 min",
+      skills: ["Sales Copy", "Conversion Optimization", "Psychology"],
+      description: "High-converting sales pages that turn visitors into paying customers",
+      online: true
+    },
+    {
+      id: 5,
+      name: "Amanda Foster",
+      specialty: "Copywriting",
+      subSpecialty: "Ad Copy",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
+      rating: 4.8,
+      completedProjects: 134,
       responseTime: "< 1 hour",
-      skills: ["Proposals", "Reports", "Presentations"],
-      description: "Professional business communications that get results",
+      skills: ["Facebook Ads", "Google Ads", "Social Media"],
+      description: "Crafting compelling ad copy that maximizes click-through rates and ROI",
+      online: true
+    },
+    {
+      id: 6,
+      name: "David Kim",
+      specialty: "Copywriting",
+      subSpecialty: "Email Marketing Campaigns",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+      rating: 4.9,
+      completedProjects: 167,
+      responseTime: "< 2 hours",
+      skills: ["Email Sequences", "Newsletter", "Automation"],
+      description: "Email campaigns that nurture leads and drive consistent sales",
+      online: false
+    },
+
+    // Business Writing specialists
+    {
+      id: 7,
+      name: "Lisa Wang",
+      specialty: "Business Writing",
+      subSpecialty: "Business Proposals",
+      avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=150&h=150&fit=crop&crop=face",
+      rating: 4.8,
+      completedProjects: 92,
+      responseTime: "< 3 hours",
+      skills: ["Proposals", "RFP Responses", "Executive Summaries"],
+      description: "Professional business proposals that win contracts and secure partnerships",
+      online: true
+    },
+    {
+      id: 8,
+      name: "Robert Chen",
+      specialty: "Business Writing",
+      subSpecialty: "Reports",
+      avatar: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=150&h=150&fit=crop&crop=face",
+      rating: 4.7,
+      completedProjects: 78,
+      responseTime: "< 4 hours",
+      skills: ["Financial Reports", "Market Analysis", "Performance Reviews"],
+      description: "Comprehensive business reports that inform strategic decision-making",
+      online: true
+    },
+    {
+      id: 9,
+      name: "Emily Davis",
+      specialty: "Business Writing",
+      subSpecialty: "Presentations",
+      avatar: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=150&h=150&fit=crop&crop=face",
+      rating: 4.9,
+      completedProjects: 114,
+      responseTime: "< 2 hours",
+      skills: ["PowerPoint", "Keynote", "Sales Presentations"],
+      description: "Compelling presentations that captivate audiences and drive action",
+      online: true
+    },
+
+    // Creative Writing specialists
+    {
+      id: 10,
+      name: "Alex Morgan",
+      specialty: "Creative Writing",
+      subSpecialty: "Short Stories",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      rating: 4.8,
+      completedProjects: 85,
+      responseTime: "< 1 day",
+      skills: ["Fiction", "Character Development", "Plot Structure"],
+      description: "Captivating short stories that entertain and engage readers",
+      online: false
+    },
+    {
+      id: 11,
+      name: "Sofia Martinez",
+      specialty: "Creative Writing",
+      subSpecialty: "Poetry",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+      rating: 4.9,
+      completedProjects: 67,
+      responseTime: "< 6 hours",
+      skills: ["Modern Poetry", "Classical Forms", "Spoken Word"],
+      description: "Beautiful poetry that touches hearts and expresses deep emotions",
+      online: true
+    },
+    {
+      id: 12,
+      name: "James Wilson",
+      specialty: "Creative Writing",
+      subSpecialty: "Screenplays",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      rating: 4.7,
+      completedProjects: 43,
+      responseTime: "< 1 day",
+      skills: ["Film Scripts", "TV Scripts", "Dialogue"],
+      description: "Professional screenplays that bring stories to life on screen",
       online: true
     }
   ];
@@ -457,6 +571,7 @@ const BrowseAI = () => {
         </div>
       </div>
 
+      {/* Chat Modal */}
       {showChat && selectedFreelancer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md h-96 flex flex-col">
