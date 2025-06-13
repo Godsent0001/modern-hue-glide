@@ -15,8 +15,6 @@ const Navigation = () => {
     { name: 'Home', href: '/' },
     { name: 'Browse AI', href: '/browse-ai' },
     { name: 'Categories', href: '#categories' },
-    { name: 'How it Works', href: '#how-it-works' },
-    { name: 'Pricing', href: '/pricing' },
   ];
 
   const isActive = (href: string) => {
@@ -65,14 +63,14 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <div className="flex items-baseline space-x-4">
+            <div className="flex items-baseline space-x-6">
               {navItems.map((item) => (
                 item.href.startsWith('#') ? (
                   <a
                     key={item.name}
                     href={item.href}
                     onClick={() => handleNavClick(item.href)}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white ${
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:text-blue-600 ${
                       isActive(item.href) ? 'text-blue-600' : 'text-gray-700'
                     }`}
                   >
@@ -82,7 +80,7 @@ const Navigation = () => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white ${
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:text-blue-600 ${
                       isActive(item.href) ? 'text-blue-600' : 'text-gray-700'
                     }`}
                   >
@@ -109,16 +107,11 @@ const Navigation = () => {
                 </form>
               ) : (
                 <Button variant="ghost" size="sm" className="hover:bg-blue-50" onClick={() => setShowSearch(true)}>
-                  <Search className="w-4 h-4 mr-2" />
-                  Search
+                  <Search className="w-4 h-4" />
                 </Button>
               )}
-              <Button variant="outline" size="sm" className="hover:bg-blue-50">
-                <User className="w-4 h-4 mr-2" />
-                Sign In
-              </Button>
               <Button 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 onClick={handleGetStarted}
               >
                 Get Started Free
@@ -163,11 +156,7 @@ const Navigation = () => {
                   </Link>
                 )
               ))}
-              <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full hover:bg-blue-50">
-                  <User className="w-4 h-4 mr-2" />
-                  Sign In
-                </Button>
+              <div className="pt-4">
                 <Button 
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   onClick={handleGetStarted}
