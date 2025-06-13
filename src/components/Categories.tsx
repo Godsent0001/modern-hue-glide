@@ -200,7 +200,7 @@ const Categories = () => {
     });
   };
 
-  const displayedCategories = showAll ? categories : categories.slice(0, 3);
+  const displayedCategories = showAll ? categories : categories.slice(0, 6);
 
   return (
     <section id="categories" className="py-20 bg-gray-50">
