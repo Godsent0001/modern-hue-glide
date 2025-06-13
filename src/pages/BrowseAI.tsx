@@ -1,21 +1,27 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X } from 'lucide-react';
+import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X, ArrowLeft, ChevronRight } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 
 const BrowseAI = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('all');
   const [activeTab, setActiveTab] = useState('browse');
   const [selectedFreelancer, setSelectedFreelancer] = useState<any>(null);
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [showSubcategories, setShowSubcategories] = useState(false);
+
+  // Get subcategories from navigation state
+  const subcategories = location.state?.subcategories || [];
 
   useEffect(() => {
     if (searchParams.get('search')) {
@@ -23,6 +29,9 @@ const BrowseAI = () => {
     }
     if (searchParams.get('category')) {
       setSelectedCategory(searchParams.get('category') || 'all');
+      if (searchParams.get('category') !== 'all') {
+        setShowSubcategories(true);
+      }
     }
   }, [searchParams]);
 
@@ -31,6 +40,7 @@ const BrowseAI = () => {
       id: 1,
       name: "Sarah Chen",
       specialty: "Content Writing",
+      subSpecialty: "Blog Posts",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
       completedProjects: 127,
@@ -42,37 +52,40 @@ const BrowseAI = () => {
     {
       id: 2,
       name: "Marcus Rodriguez",
-      specialty: "Web Development",
+      specialty: "Copywriting",
+      subSpecialty: "Sales Pages",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       rating: 4.8,
       completedProjects: 89,
       responseTime: "< 30 min",
-      skills: ["React", "Node.js", "API Integration"],
-      description: "Building scalable web applications with modern technologies",
+      skills: ["Sales Copy", "Ad Copy", "Email Marketing"],
+      description: "Creating persuasive copy that converts visitors into customers",
       online: true
     },
     {
       id: 3,
       name: "Emily Watson",
-      specialty: "Graphic Design",
+      specialty: "Creative Writing",
+      subSpecialty: "Short Stories",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
       completedProjects: 156,
       responseTime: "< 2 hours",
-      skills: ["Logo Design", "Brand Identity", "UI/UX"],
-      description: "Creating visual experiences that communicate effectively",
+      skills: ["Fiction", "Poetry", "Screenplays"],
+      description: "Bringing stories to life with compelling narratives",
       online: false
     },
     {
       id: 4,
       name: "David Kim",
-      specialty: "Digital Marketing",
+      specialty: "Business Writing",
+      subSpecialty: "Business Proposals",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
       rating: 4.7,
       completedProjects: 203,
       responseTime: "< 1 hour",
-      skills: ["PPC", "Social Media", "Analytics"],
-      description: "Data-driven marketing strategies that deliver ROI",
+      skills: ["Proposals", "Reports", "Presentations"],
+      description: "Professional business communications that get results",
       online: true
     }
   ];
@@ -114,16 +127,31 @@ const BrowseAI = () => {
   ];
 
   const categories = [
-    "all", "Content Writing", "Web Development", "Graphic Design", "Digital Marketing", 
-    "Data Analysis", "Video Editing", "Photography", "Music Production"
+    "all", "Content Writing", "Copywriting", "Business Writing", "Ghost Writing",
+    "Academic Writing", "Journalism and Editorial", "Resume and Career Writing",
+    "Legal and Financial Writing", "Creative Writing", "Editing and Proofreading",
+    "Marketing Content Creation", "Emerging Writings"
   ];
 
   const filteredFreelancers = aiFreelancers.filter(freelancer => {
     const matchesSearch = freelancer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         freelancer.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+                         freelancer.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         freelancer.subSpecialty.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || freelancer.specialty === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesSubcategory = selectedSubcategory === 'all' || freelancer.subSpecialty === selectedSubcategory;
+    return matchesSearch && matchesCategory && matchesSubcategory;
   });
+
+  const handleBackToCategories = () => {
+    setSelectedCategory('all');
+    setSelectedSubcategory('all');
+    setShowSubcategories(false);
+    navigate('/browse-ai');
+  };
+
+  const handleSubcategorySelect = (subcategory: string) => {
+    setSelectedSubcategory(subcategory);
+  };
 
   const handleHire = (freelancer: any) => {
     setSelectedFreelancer(freelancer);
@@ -170,11 +198,61 @@ const BrowseAI = () => {
       
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          {showSubcategories && selectedCategory !== 'all' && (
+            <div className="flex items-center mb-6 text-sm text-gray-600">
+              <button 
+                onClick={handleBackToCategories}
+                className="flex items-center hover:text-blue-600 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                All Categories
+              </button>
+              <ChevronRight className="w-4 h-4 mx-2" />
+              <span className="text-gray-900 font-medium">{selectedCategory}</span>
+            </div>
+          )}
+
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Specialists</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {showSubcategories && selectedCategory !== 'all' 
+                ? `${selectedCategory} Specialists` 
+                : 'AI Specialists'
+              }
+            </h1>
             <p className="text-gray-600">Connect with AI professionals tailored to your needs</p>
           </div>
+
+          {/* Subcategories */}
+          {showSubcategories && subcategories.length > 0 && (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-lg">Subcategories</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={selectedSubcategory === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleSubcategorySelect('all')}
+                  >
+                    All {selectedCategory}
+                  </Button>
+                  {subcategories.map((subcategory: string, index: number) => (
+                    <Button
+                      key={index}
+                      variant={selectedSubcategory === subcategory ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handleSubcategorySelect(subcategory)}
+                    >
+                      {subcategory}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Tabs */}
           <div className="mb-8">
@@ -220,20 +298,22 @@ const BrowseAI = () => {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Filter className="text-gray-500 w-5 h-5" />
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        {categories.map(category => (
-                          <option key={category} value={category}>
-                            {category === 'all' ? 'All Categories' : category}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {!showSubcategories && (
+                      <div className="flex items-center gap-4">
+                        <Filter className="text-gray-500 w-5 h-5" />
+                        <select
+                          value={selectedCategory}
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          {categories.map(category => (
+                            <option key={category} value={category}>
+                              {category === 'all' ? 'All Categories' : category}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -256,6 +336,7 @@ const BrowseAI = () => {
                           <div>
                             <CardTitle className="text-lg">{freelancer.name}</CardTitle>
                             <p className="text-sm text-blue-600">{freelancer.specialty}</p>
+                            <p className="text-xs text-gray-500">{freelancer.subSpecialty}</p>
                           </div>
                         </div>
                         <div className="flex items-center text-sm text-gray-600">
@@ -376,7 +457,6 @@ const BrowseAI = () => {
         </div>
       </div>
 
-      {/* Chat Interface */}
       {showChat && selectedFreelancer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md h-96 flex flex-col">
