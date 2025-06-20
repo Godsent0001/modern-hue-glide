@@ -1,15 +1,11 @@
-
 import { Star, Clock, CheckCircle, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ChatInterface from './ChatInterface';
 
 const AIFreelancers = () => {
   const [showAll, setShowAll] = useState(false);
-  const [selectedFreelancer, setSelectedFreelancer] = useState(null);
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const navigate = useNavigate();
 
   const freelancers = [
@@ -129,13 +125,8 @@ const AIFreelancers = () => {
 
   const displayedFreelancers = showAll ? freelancers : freelancers.slice(0, 6);
 
-  const handleChatClick = (freelancer) => {
-    setSelectedFreelancer(freelancer);
-    setIsChatOpen(true);
-  };
-
-  const handleHireClick = (freelancer) => {
-    navigate('/signin', { state: { returnTo: `/hire/${freelancer.id}` } });
+  const handleMessageClick = (freelancer) => {
+    navigate(`/chat/${freelancer.id}`, { state: { freelancer } });
   };
 
   return (
@@ -202,23 +193,14 @@ const AIFreelancers = () => {
                     <span className="text-2xl font-bold text-green-600">FREE</span>
                     <p className="text-xs text-gray-500">Forever</p>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleChatClick(freelancer)}
-                    >
-                      <MessageCircle className="w-4 h-4 mr-1" />
-                      Chat
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      className="bg-blue-600 hover:bg-blue-700"
-                      onClick={() => handleHireClick(freelancer)}
-                    >
-                      Hire Now
-                    </Button>
-                  </div>
+                  <Button 
+                    size="sm" 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => handleMessageClick(freelancer)}
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Message
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -249,14 +231,6 @@ const AIFreelancers = () => {
           </Button>
         </div>
       </div>
-
-      {selectedFreelancer && (
-        <ChatInterface
-          freelancer={selectedFreelancer}
-          isOpen={isChatOpen}
-          onClose={() => setIsChatOpen(false)}
-        />
-      )}
     </section>
   );
 };

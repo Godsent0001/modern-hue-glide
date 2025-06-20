@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Menu, X, Bot, Search, User } from 'lucide-react';
+import { Menu, X, Bot, Search, User, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
@@ -45,6 +45,14 @@ const Navigation = () => {
 
   const handleGetStarted = () => {
     navigate('/browse-ai');
+  };
+
+  const handleLogin = () => {
+    navigate('/signin');
+  };
+
+  const handleProfile = () => {
+    navigate('/settings');
   };
 
   return (
@@ -111,6 +119,24 @@ const Navigation = () => {
                 </Button>
               )}
               <Button 
+                variant="ghost" 
+                size="sm" 
+                className="hover:bg-blue-50"
+                onClick={handleLogin}
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Login
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="hover:bg-blue-50"
+                onClick={handleProfile}
+              >
+                <User className="w-4 h-4 mr-2" />
+                Profile
+              </Button>
+              <Button 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 onClick={handleGetStarted}
               >
@@ -156,7 +182,23 @@ const Navigation = () => {
                   </Link>
                 )
               ))}
-              <div className="pt-4">
+              <div className="pt-4 space-y-2">
+                <Button 
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleLogin}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleProfile}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Button>
                 <Button 
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   onClick={handleGetStarted}
