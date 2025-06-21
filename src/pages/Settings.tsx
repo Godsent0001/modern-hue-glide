@@ -1,14 +1,14 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Bell, Shield, CreditCard, ArrowLeft, Settings as SettingsIcon } from 'lucide-react';
+import { User, CreditCard, ArrowLeft, Settings as SettingsIcon, HelpCircle, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileTab from '@/components/settings/ProfileTab';
-import NotificationsTab from '@/components/settings/NotificationsTab';
 import SecurityTab from '@/components/settings/SecurityTab';
 import BillingTab from '@/components/settings/BillingTab';
 import AdminTab from '@/components/settings/AdminTab';
+import SupportTab from '@/components/settings/SupportTab';
+import FaqTab from '@/components/settings/FaqTab';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -22,13 +22,6 @@ const Settings = () => {
     bio: 'Looking for quality AI writing specialists for my business.'
   });
 
-  // Notifications state
-  const [notifications, setNotifications] = useState({
-    emailUpdates: true,
-    pushNotifications: false,
-    marketingEmails: false
-  });
-
   // Mock available tokens - in a real app this would come from your backend
   const [availableTokens] = useState(250000);
 
@@ -37,8 +30,8 @@ const Settings = () => {
       id: 'free',
       name: 'Free Plan',
       price: 0,
-      tokens: 100000,
-      features: ['100,000 tokens', 'Basic AI models', 'Standard support'],
+      tokens: 10000,
+      features: ['10,000 tokens per day', 'Access to all AI models', 'Basic support'],
       current: true
     },
     {
@@ -46,7 +39,7 @@ const Settings = () => {
       name: 'Standard Plan',
       price: 0.99,
       tokens: 500000,
-      features: ['500,000 tokens', 'Advanced AI models', 'Priority support', 'Custom templates'],
+      features: ['500,000 tokens', 'Access to all AI models', 'Priority support', 'Custom templates'],
       current: false
     },
     {
@@ -54,7 +47,7 @@ const Settings = () => {
       name: 'Premium Plan',
       price: 1.99,
       tokens: 1000000,
-      features: ['1,000,000 tokens', 'All AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration'],
+      features: ['1,000,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration'],
       current: false
     }
   ];
@@ -156,18 +149,16 @@ const Settings = () => {
 
   const [faqItems, setFaqItems] = useState([
     { id: 1, question: "How do I get started?", answer: "Simply sign up and browse our AI specialists.", category: "Getting Started" },
-    { id: 2, question: "How does billing work?", answer: "We use a token-based system. Purchase tokens and use them as needed.", category: "Billing" }
+    { id: 2, question: "How does billing work?", answer: "We use a token-based system. Purchase tokens and use them as needed.", category: "Billing" },
+    { id: 3, question: "Can I create custom AI specialists?", answer: "Yes, our premium plans allow you to create custom AI specialists with specific personalities and expertise.", category: "Features" },
+    { id: 4, question: "What payment methods do you accept?", answer: "We accept all major credit cards, PayPal, and bank transfers for enterprise plans.", category: "Billing" }
   ]);
 
   const [newFaq, setNewFaq] = useState({ question: '', answer: '', category: '' });
 
-  // Handler functions for profile, notifications, billing
+  // Handler functions for profile, billing
   const handleProfileChange = (field: string, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleNotificationChange = (field: string, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [field]: value }));
   };
 
   const handlePayNow = (planId: string) => {
@@ -323,17 +314,17 @@ const Settings = () => {
               <User className="w-4 h-4" />
               <span>Profile</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center space-x-2">
-              <Bell className="w-4 h-4" />
-              <span>Notifications</span>
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center space-x-2">
-              <Shield className="w-4 h-4" />
-              <span>Security</span>
-            </TabsTrigger>
             <TabsTrigger value="billing" className="flex items-center space-x-2">
               <CreditCard className="w-4 h-4" />
               <span>Billing</span>
+            </TabsTrigger>
+            <TabsTrigger value="support" className="flex items-center space-x-2">
+              <MessageSquare className="w-4 h-4" />
+              <span>Support</span>
+            </TabsTrigger>
+            <TabsTrigger value="faq" className="flex items-center space-x-2">
+              <HelpCircle className="w-4 h-4" />
+              <span>FAQ</span>
             </TabsTrigger>
             <TabsTrigger value="admin" className="flex items-center space-x-2">
               <SettingsIcon className="w-4 h-4" />
@@ -348,23 +339,26 @@ const Settings = () => {
             />
           </TabsContent>
 
-          <TabsContent value="notifications">
-            <NotificationsTab 
-              notifications={notifications}
-              onNotificationChange={handleNotificationChange}
-            />
-          </TabsContent>
-
-          <TabsContent value="security">
-            <SecurityTab />
-          </TabsContent>
-
           <TabsContent value="billing">
             <BillingTab 
               availableTokens={availableTokens}
               plans={plans}
               onPayNow={handlePayNow}
               formatTokens={formatTokens}
+            />
+          </TabsContent>
+
+          <TabsContent value="support">
+            <SupportTab />
+          </TabsContent>
+
+          <TabsContent value="faq">
+            <FaqTab 
+              faqItems={faqItems}
+              newFaq={newFaq}
+              setNewFaq={setNewFaq}
+              onAddFaq={handleAddFaq}
+              onDeleteFaq={handleDeleteFaq}
             />
           </TabsContent>
 

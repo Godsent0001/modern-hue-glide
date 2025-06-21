@@ -5,6 +5,7 @@ import { Send, ArrowLeft, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Navigation from '@/components/Navigation';
+import RatingModal from '@/components/RatingModal';
 
 const ChatPage = () => {
   const { id } = useParams();
@@ -12,6 +13,8 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [status, setStatus] = useState('active');
+  const [showRatingModal, setShowRatingModal] = useState(false);
   
   // Get freelancer data from location state or create default
   const freelancer = location.state?.freelancer || {
@@ -23,6 +26,19 @@ const ChatPage = () => {
     responseTime: '< 1 hour',
     description: 'Professional AI specialist ready to help with your project.'
   };
+
+  // Status cycling effect
+  useEffect(() => {
+    const statuses = ['active', 'pending', 'delivered'];
+    let currentIndex = 0;
+    
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % statuses.length;
+      setStatus(statuses[currentIndex]);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Initialize chat with welcome message
@@ -72,6 +88,29 @@ const ChatPage = () => {
     }, 1000);
   };
 
+  const handleRating = (rating: number, review: string) => {
+    console.log('Rating submitted:', { rating, review, freelancer: freelancer.id });
+    // In a real app, this would save the rating to your backend
+  };
+
+  const getStatusColor = () => {
+    switch (status) {
+      case 'active': return 'bg-green-500';
+      case 'pending': return 'bg-yellow-500';
+      case 'delivered': return 'bg-blue-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusText = () => {
+    switch (status) {
+      case 'active': return 'Active';
+      case 'pending': return 'Pending';
+      case 'delivered': return 'Delivered';
+      default: return 'Unknown';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -109,8 +148,19 @@ const ChatPage = () => {
                         <Clock className="w-4 h-4 mr-1" />
                         <span>{freelancer.responseTime}</span>
                       </div>
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>Online</span>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 ${getStatusColor()} rounded-full`}></div>
+                        <span>{getStatusText()}</span>
+                        {status === 'delivered' && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => setShowRatingModal(true)}
+                            className="ml-2 bg-blue-600 hover:bg-blue-700"
+                          >
+                            Rate
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -162,6 +212,13 @@ const ChatPage = () => {
           </Card>
         </div>
       </div>
+
+      <RatingModal
+        freelancer={freelancer}
+        isOpen={showRatingModal}
+        onClose={() => setShowRatingModal(false)}
+        onSubmitRating={handleRating}
+      />
     </div>
   );
 };

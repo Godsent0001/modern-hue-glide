@@ -20,6 +20,33 @@ interface BillingTabProps {
 }
 
 const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingTabProps) => {
+  const updatedPlans = [
+    {
+      id: 'free',
+      name: 'Free Plan',
+      price: 0,
+      tokens: 10000,
+      features: ['10,000 tokens per day', 'Access to all AI models', 'Basic support', 'Community access'],
+      current: true
+    },
+    {
+      id: 'standard',
+      name: 'Standard Plan',
+      price: 0.99,
+      tokens: 500000,
+      features: ['500,000 tokens', 'Access to all AI models', 'Priority support', 'Custom templates', 'Advanced analytics'],
+      current: false
+    },
+    {
+      id: 'premium',
+      name: 'Premium Plan',
+      price: 1.99,
+      tokens: 1000000,
+      features: ['1,000,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration', 'White-label solutions'],
+      current: false
+    }
+  ];
+
   return (
     <div className="space-y-6">
       {/* Available Tokens Display */}
@@ -47,7 +74,7 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
 
       {/* Pricing Plans */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan) => (
+        {updatedPlans.map((plan) => (
           <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''}`}>
             {plan.current && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -62,7 +89,7 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
                 {plan.price === 0 ? 'Free' : `$${plan.price}`}
               </div>
               <p className="text-gray-600">
-                {formatTokens(plan.tokens)} tokens
+                {plan.id === 'free' ? '10K tokens/day' : formatTokens(plan.tokens) + ' tokens'}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
