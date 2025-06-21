@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import { User, Bell, Shield, CreditCard, ArrowLeft, Check, Settings as SettingsIcon, Plus, Edit, Trash2, Users, DollarSign, MessageSquare, TrendingUp } from 'lucide-react';
+import { User, Bell, Shield, CreditCard, ArrowLeft, Check, Settings as SettingsIcon, Plus, Edit, Trash2, Users, DollarSign, MessageSquare, TrendingUp, Ban, UserCheck, Mail, Megaphone, FileText, Activity, Eye, Calendar, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const navigate = useNavigate();
   
+  // Profile state
   const [profile, setProfile] = useState({
     firstName: 'John',
     lastName: 'Doe',
@@ -19,6 +20,7 @@ const Settings = () => {
     bio: 'Looking for quality AI writing specialists for my business.'
   });
 
+  // Notifications state
   const [notifications, setNotifications] = useState({
     emailUpdates: true,
     pushNotifications: false,
@@ -55,13 +57,38 @@ const Settings = () => {
     }
   ];
 
-  // Admin dashboard state
+  // Enhanced Admin dashboard state
   const [adminStats] = useState({
     totalUsers: 1247,
+    activeUsers: 856,
+    monthlyVisitors: 4523,
+    loggedInUsers: 342,
     activeSpecialists: 8,
     monthlyRevenue: 15420,
-    totalMessages: 34567
+    pendingJobs: 124,
+    completedJobs: 1892
   });
+
+  const [users, setUsers] = useState([
+    {
+      id: 1,
+      name: "Alice Johnson",
+      email: "alice@example.com",
+      role: "User",
+      status: "Active",
+      joinDate: "2024-01-15",
+      lastActive: "2024-06-20"
+    },
+    {
+      id: 2,  
+      name: "Bob Smith",
+      email: "bob@example.com",
+      role: "Admin",
+      status: "Active",
+      joinDate: "2024-02-03",
+      lastActive: "2024-06-21"
+    }
+  ]);
 
   const [specialists, setSpecialists] = useState([
     {
@@ -71,16 +98,24 @@ const Settings = () => {
       status: "Active",
       jobsCompleted: 247,
       rating: 4.9,
-      created: "2024-01-15"
+      created: "2024-01-15",
+      niche: "Technology",
+      customPrompt: "You are a technology blog writing specialist...",
+      personality: "Professional and engaging",
+      skills: "Technical writing, SEO optimization, Content strategy"
     },
     {
       id: 2,
-      name: "Marcus Rodriguez",
+      name: "Marcus Rodriguez", 
       specialty: "Landing Page Copy Expert",
       status: "Active",
       jobsCompleted: 189,
       rating: 5.0,
-      created: "2024-02-03"
+      created: "2024-02-03",
+      niche: "Marketing",
+      customPrompt: "You are a conversion-focused copywriter...",
+      personality: "Persuasive and results-driven",
+      skills: "Copywriting, Conversion optimization, A/B testing"
     }
   ]);
 
@@ -94,8 +129,37 @@ const Settings = () => {
     avatar: ''
   });
 
+  const [editingSpecialist, setEditingSpecialist] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
 
+  const [auditLogs] = useState([
+    { id: 1, admin: "John Doe", action: "Created AI Specialist", target: "Sarah Chen", timestamp: "2024-06-21 10:30" },
+    { id: 2, admin: "John Doe", action: "Suspended User", target: "alice@example.com", timestamp: "2024-06-21 09:15" },
+    { id: 3, admin: "John Doe", action: "Updated System Settings", target: "Token Allocation", timestamp: "2024-06-20 16:45" }
+  ]);
+
+  const [emailCampaign, setEmailCampaign] = useState({
+    subject: '',
+    content: '',
+    targetAudience: 'all'
+  });
+
+  const [announcement, setAnnouncement] = useState({
+    title: '',
+    content: '',
+    type: 'info',
+    active: false
+  });
+
+  const [faqItems, setFaqItems] = useState([
+    { id: 1, question: "How do I get started?", answer: "Simply sign up and browse our AI specialists.", category: "Getting Started" },
+    { id: 2, question: "How does billing work?", answer: "We use a token-based system. Purchase tokens and use them as needed.", category: "Billing" }
+  ]);
+
+  const [newFaq, setNewFaq] = useState({ question: '', answer: '', category: '' });
+
+  // Handler functions for profile, notifications, billing
   const handleProfileChange = (field: string, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
@@ -128,7 +192,11 @@ const Settings = () => {
       status: "Active",
       jobsCompleted: 0,
       rating: 0,
-      created: new Date().toISOString().split('T')[0]
+      created: new Date().toISOString().split('T')[0],
+      niche: newSpecialist.niche,
+      customPrompt: newSpecialist.customPrompt,
+      personality: newSpecialist.personality,
+      skills: newSpecialist.skills
     };
     setSpecialists([...specialists, specialist]);
     setNewSpecialist({
@@ -144,8 +212,91 @@ const Settings = () => {
     console.log('Created specialist with prompt:', newSpecialist.customPrompt);
   };
 
+  const handleEditSpecialist = (specialist) => {
+    setEditingSpecialist(specialist);
+    setNewSpecialist({
+      name: specialist.name,
+      specialty: specialist.specialty,
+      niche: specialist.niche,
+      customPrompt: specialist.customPrompt,
+      personality: specialist.personality,
+      skills: specialist.skills,
+      avatar: specialist.avatar || ''
+    });
+    setShowEditForm(true);
+  };
+
+  const handleUpdateSpecialist = () => {
+    const updatedSpecialists = specialists.map(s => 
+      s.id === editingSpecialist.id 
+        ? { ...s, ...newSpecialist }
+        : s
+    );
+    setSpecialists(updatedSpecialists);
+    setShowEditForm(false);
+    setEditingSpecialist(null);
+    setNewSpecialist({
+      name: '',
+      specialty: '',
+      niche: '',
+      customPrompt: '',
+      personality: '',
+      skills: '',
+      avatar: ''
+    });
+  };
+
   const handleDeleteSpecialist = (id: number) => {
     setSpecialists(specialists.filter(s => s.id !== id));
+  };
+
+  const handleUserAction = (userId: number, action: string) => {
+    const updatedUsers = users.map(user => {
+      if (user.id === userId) {
+        switch (action) {
+          case 'suspend':
+            return { ...user, status: 'Suspended' };
+          case 'ban':
+            return { ...user, status: 'Banned' };
+          case 'activate':
+            return { ...user, status: 'Active' };
+          case 'makeAdmin':
+            return { ...user, role: 'Admin' };
+          case 'removeAdmin':
+            return { ...user, role: 'User' };
+          default:
+            return user;
+        }
+      }
+      return user;
+    });
+    setUsers(updatedUsers);
+  };
+
+  const handleDeleteUser = (userId: number) => {
+    setUsers(users.filter(u => u.id !== userId));
+  };
+
+  const handleSendEmailCampaign = () => {
+    console.log('Sending email campaign:', emailCampaign);
+    alert('Email campaign sent successfully!');
+    setEmailCampaign({ subject: '', content: '', targetAudience: 'all' });
+  };
+
+  const handleCreateAnnouncement = () => {
+    console.log('Creating announcement:', announcement);
+    alert('Announcement created successfully!');
+    setAnnouncement({ title: '', content: '', type: 'info', active: false });
+  };
+
+  const handleAddFaq = () => {
+    const id = faqItems.length + 1;
+    setFaqItems([...faqItems, { ...newFaq, id }]);
+    setNewFaq({ question: '', answer: '', category: '' });
+  };
+
+  const handleDeleteFaq = (id: number) => {
+    setFaqItems(faqItems.filter(item => item.id !== id));
   };
 
   return (
@@ -406,7 +557,7 @@ const Settings = () => {
 
           <TabsContent value="admin">
             <div className="space-y-6">
-              {/* Admin Stats */}
+              {/* Enhanced Admin Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <Card>
                   <CardContent className="p-6">
@@ -422,7 +573,40 @@ const Settings = () => {
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
-                      <MessageSquare className="w-8 h-8 text-green-600" />
+                      <Activity className="w-8 h-8 text-green-600" />
+                      <div>
+                        <p className="text-2xl font-bold">{adminStats.activeUsers}</p>
+                        <p className="text-sm text-gray-600">Active Users</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <Eye className="w-8 h-8 text-purple-600" />
+                      <div>
+                        <p className="text-2xl font-bold">{adminStats.monthlyVisitors}</p>
+                        <p className="text-sm text-gray-600">Monthly Visitors</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <UserCheck className="w-8 h-8 text-orange-600" />
+                      <div>
+                        <p className="text-2xl font-bold">{adminStats.loggedInUsers}</p>
+                        <p className="text-sm text-gray-600">Logged In Users</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <MessageSquare className="w-8 h-8 text-yellow-600" />
                       <div>
                         <p className="text-2xl font-bold">{adminStats.activeSpecialists}</p>
                         <p className="text-sm text-gray-600">AI Specialists</p>
@@ -433,7 +617,7 @@ const Settings = () => {
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
-                      <DollarSign className="w-8 h-8 text-yellow-600" />
+                      <DollarSign className="w-8 h-8 text-green-600" />
                       <div>
                         <p className="text-2xl font-bold">${adminStats.monthlyRevenue}</p>
                         <p className="text-sm text-gray-600">Monthly Revenue</p>
@@ -444,15 +628,112 @@ const Settings = () => {
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-4">
-                      <TrendingUp className="w-8 h-8 text-purple-600" />
+                      <Calendar className="w-8 h-8 text-red-600" />
                       <div>
-                        <p className="text-2xl font-bold">{adminStats.totalMessages}</p>
-                        <p className="text-sm text-gray-600">Total Messages</p>
+                        <p className="text-2xl font-bold">{adminStats.pendingJobs}</p>
+                        <p className="text-sm text-gray-600">Pending Jobs</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <TrendingUp className="w-8 h-8 text-blue-600" />
+                      <div>
+                        <p className="text-2xl font-bold">{adminStats.completedJobs}</p>
+                        <p className="text-sm text-gray-600">Completed Jobs</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
+
+              {/* User Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Management</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Join Date</TableHead>
+                        <TableHead>Last Active</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.name}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              user.role === 'Admin' 
+                                ? 'bg-purple-100 text-purple-800' 
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.role}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              user.status === 'Active' 
+                                ? 'bg-green-100 text-green-800' 
+                                : user.status === 'Suspended'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {user.status}
+                            </span>
+                          </TableCell>
+                          <TableCell>{user.joinDate}</TableCell>
+                          <TableCell>{user.lastActive}</TableCell>
+                          <TableCell>
+                            <div className="flex space-x-1">
+                              {user.role !== 'Admin' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleUserAction(user.id, 'makeAdmin')}
+                                  title="Make Admin"
+                                >
+                                  <UserCheck className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {user.status === 'Active' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleUserAction(user.id, 'suspend')}
+                                  title="Suspend User"
+                                  className="text-yellow-600 hover:text-yellow-700"
+                                >
+                                  <Ban className="w-4 h-4" />
+                                </Button>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDeleteUser(user.id)}
+                                title="Delete User"
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
 
               {/* AI Specialists Management */}
               <Card>
@@ -467,9 +748,11 @@ const Settings = () => {
                   </Button>
                 </CardHeader>
                 <CardContent>
-                  {showCreateForm && (
+                  {(showCreateForm || showEditForm) && (
                     <div className="mb-6 p-6 bg-gray-50 rounded-lg space-y-4">
-                      <h3 className="text-lg font-semibold">Create New AI Specialist</h3>
+                      <h3 className="text-lg font-semibold">
+                        {showEditForm ? `Edit ${editingSpecialist?.name}` : 'Create New AI Specialist'}
+                      </h3>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -548,14 +831,27 @@ const Settings = () => {
                       </div>
                       <div className="flex space-x-4">
                         <Button
-                          onClick={handleCreateSpecialist}
+                          onClick={showEditForm ? handleUpdateSpecialist : handleCreateSpecialist}
                           className="bg-green-600 hover:bg-green-700"
                         >
-                          Create Specialist
+                          {showEditForm ? 'Update Specialist' : 'Create Specialist'}
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={() => setShowCreateForm(false)}
+                          onClick={() => {
+                            setShowCreateForm(false);
+                            setShowEditForm(false);
+                            setEditingSpecialist(null);
+                            setNewSpecialist({
+                              name: '',
+                              specialty: '',
+                              niche: '',
+                              customPrompt: '',
+                              personality: '',
+                              skills: '',
+                              avatar: ''
+                            });
+                          }}
                         >
                           Cancel
                         </Button>
@@ -594,7 +890,11 @@ const Settings = () => {
                           <TableCell>{specialist.created}</TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleEditSpecialist(specialist)}
+                              >
                                 <Edit className="w-4 h-4" />
                               </Button>
                               <Button 
@@ -607,6 +907,210 @@ const Settings = () => {
                               </Button>
                             </div>
                           </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* Marketing Tools */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Mail className="w-5 h-5" />
+                      <span>Email Campaigns</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Subject
+                      </label>
+                      <Input
+                        value={emailCampaign.subject}
+                        onChange={(e) => setEmailCampaign({...emailCampaign, subject: e.target.value})}
+                        placeholder="Campaign subject..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Target Audience
+                      </label>
+                      <select 
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        value={emailCampaign.targetAudience}
+                        onChange={(e) => setEmailCampaign({...emailCampaign, targetAudience: e.target.value})}
+                      >
+                        <option value="all">All Users</option>
+                        <option value="active">Active Users</option>
+                        <option value="inactive">Inactive Users</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Content
+                      </label>
+                      <Textarea
+                        value={emailCampaign.content}
+                        onChange={(e) => setEmailCampaign({...emailCampaign, content: e.target.value})}
+                        placeholder="Campaign content..."
+                        rows={3}
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleSendEmailCampaign}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      Send Campaign
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Megaphone className="w-5 h-5" />
+                      <span>Announcements</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Title
+                      </label>
+                      <Input
+                        value={announcement.title}
+                        onChange={(e) => setAnnouncement({...announcement, title: e.target.value})}
+                        placeholder="Announcement title..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Type
+                      </label>
+                      <select 
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        value={announcement.type}
+                        onChange={(e) => setAnnouncement({...announcement, type: e.target.value})}
+                      >
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="success">Success</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Content
+                      </label>
+                      <Textarea
+                        value={announcement.content}
+                        onChange={(e) => setAnnouncement({...announcement, content: e.target.value})}
+                        placeholder="Announcement content..."
+                        rows={3}
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleCreateAnnouncement}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      Create Announcement
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* FAQ Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <FileText className="w-5 h-5" />
+                    <span>FAQ Management</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-3 gap-4">
+                    <Input
+                      placeholder="Question..."
+                      value={newFaq.question}
+                      onChange={(e) => setNewFaq({...newFaq, question: e.target.value})}
+                    />
+                    <Input
+                      placeholder="Category..."
+                      value={newFaq.category}
+                      onChange={(e) => setNewFaq({...newFaq, category: e.target.value})}
+                    />
+                    <Button onClick={handleAddFaq} className="bg-green-600 hover:bg-green-700">
+                      Add FAQ
+                    </Button>
+                  </div>
+                  <div>
+                    <Textarea
+                      placeholder="Answer..."
+                      value={newFaq.answer}
+                      onChange={(e) => setNewFaq({...newFaq, answer: e.target.value})}
+                      rows={2}
+                    />
+                  </div>
+                  
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Question</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Answer</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {faqItems.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell className="font-medium">{item.question}</TableCell>
+                          <TableCell>{item.category}</TableCell>
+                          <TableCell className="max-w-xs truncate">{item.answer}</TableCell>
+                          <TableCell>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleDeleteFaq(item.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* Audit Log */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <AlertTriangle className="w-5 h-5" />
+                    <span>Audit Log</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Admin</TableHead>
+                        <TableHead>Action</TableHead>
+                        <TableHead>Target</TableHead>
+                        <TableHead>Timestamp</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditLogs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell className="font-medium">{log.admin}</TableCell>
+                          <TableCell>{log.action}</TableCell>
+                          <TableCell>{log.target}</TableCell>
+                          <TableCell>{log.timestamp}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
