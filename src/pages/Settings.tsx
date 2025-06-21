@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Bell, Shield, CreditCard } from 'lucide-react';
+import { User, Bell, Shield, CreditCard, ArrowLeft, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({
     firstName: 'John',
     lastName: 'Doe',
@@ -21,6 +23,36 @@ const Settings = () => {
     marketingEmails: false
   });
 
+  // Mock available tokens - in a real app this would come from your backend
+  const [availableTokens] = useState(250000);
+
+  const plans = [
+    {
+      id: 'free',
+      name: 'Free Plan',
+      price: 0,
+      tokens: 100000,
+      features: ['100,000 tokens', 'Basic AI models', 'Standard support'],
+      current: true
+    },
+    {
+      id: 'standard',
+      name: 'Standard Plan',
+      price: 0.99,
+      tokens: 500000,
+      features: ['500,000 tokens', 'Advanced AI models', 'Priority support', 'Custom templates'],
+      current: false
+    },
+    {
+      id: 'premium',
+      name: 'Premium Plan',
+      price: 1.99,
+      tokens: 1000000,
+      features: ['1,000,000 tokens', 'All AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration'],
+      current: false
+    }
+  ];
+
   const handleProfileChange = (field: string, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
@@ -29,10 +61,33 @@ const Settings = () => {
     setNotifications(prev => ({ ...prev, [field]: value }));
   };
 
+  const handlePayNow = (planId: string) => {
+    console.log(`Initiating payment for plan: ${planId}`);
+    // In a real app, this would integrate with your payment system
+    alert(`Payment flow for ${planId} plan would be initiated here`);
+  };
+
+  const formatTokens = (tokens: number) => {
+    if (tokens >= 1000000) {
+      return `${(tokens / 1000000).toFixed(1)}M`;
+    } else if (tokens >= 1000) {
+      return `${(tokens / 1000).toFixed(0)}K`;
+    }
+    return tokens.toString();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="mb-4 hover:bg-gray-100"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Button>
           <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-600">Manage your account settings and preferences.</p>
         </div>
@@ -200,28 +255,77 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="billing">
-            <Card>
-              <CardHeader>
-                <CardTitle>Billing Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="font-medium text-green-800">Free Plan</h3>
-                  <p className="text-sm text-green-600">You're currently on our free plan</p>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-4">Payment Methods</h3>
-                  <p className="text-sm text-gray-600 mb-4">No payment methods on file</p>
-                  <Button variant="outline">
-                    Add Payment Method
-                  </Button>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-4">Billing History</h3>
-                  <p className="text-sm text-gray-600">No billing history available</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              {/* Available Tokens Display */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Available Tokens</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-3xl font-bold text-blue-600">
+                      {formatTokens(availableTokens)}
+                    </div>
+                    <div className="text-gray-600">
+                      tokens remaining
+                    </div>
+                  </div>
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full" 
+                      style={{ width: `${(availableTokens / 1000000) * 100}%` }}
+                    ></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Pricing Plans */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {plans.map((plan) => (
+                  <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''}`}>
+                    {plan.current && (
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+                          Current Plan
+                        </span>
+                      </div>
+                    )}
+                    <CardHeader className="text-center">
+                      <CardTitle className="text-xl">{plan.name}</CardTitle>
+                      <div className="text-3xl font-bold">
+                        {plan.price === 0 ? 'Free' : `$${plan.price}`}
+                      </div>
+                      <p className="text-gray-600">
+                        {formatTokens(plan.tokens)} tokens
+                      </p>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <ul className="space-y-2">
+                        {plan.features.map((feature, index) => (
+                          <li key={index} className="flex items-center space-x-2">
+                            <Check className="w-4 h-4 text-green-500" />
+                            <span className="text-sm">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      {plan.id !== 'free' && (
+                        <Button 
+                          className="w-full bg-blue-600 hover:bg-blue-700"
+                          onClick={() => handlePayNow(plan.id)}
+                        >
+                          Pay Now
+                        </Button>
+                      )}
+                      {plan.current && (
+                        <div className="text-center text-sm text-gray-600">
+                          Your current plan
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
