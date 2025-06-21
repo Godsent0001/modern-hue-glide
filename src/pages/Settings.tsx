@@ -1,14 +1,16 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Bell, Shield, CreditCard, ArrowLeft, Check } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import { User, Bell, Shield, CreditCard, ArrowLeft, Check, Settings as SettingsIcon, Plus, Edit, Trash2, Users, DollarSign, MessageSquare, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const navigate = useNavigate();
+  
   const [profile, setProfile] = useState({
     firstName: 'John',
     lastName: 'Doe',
@@ -53,6 +55,47 @@ const Settings = () => {
     }
   ];
 
+  // Admin dashboard state
+  const [adminStats] = useState({
+    totalUsers: 1247,
+    activeSpecialists: 8,
+    monthlyRevenue: 15420,
+    totalMessages: 34567
+  });
+
+  const [specialists, setSpecialists] = useState([
+    {
+      id: 1,
+      name: "Sarah Chen",
+      specialty: "Blog Writing Specialist",
+      status: "Active",
+      jobsCompleted: 247,
+      rating: 4.9,
+      created: "2024-01-15"
+    },
+    {
+      id: 2,
+      name: "Marcus Rodriguez",
+      specialty: "Landing Page Copy Expert",
+      status: "Active",
+      jobsCompleted: 189,
+      rating: 5.0,
+      created: "2024-02-03"
+    }
+  ]);
+
+  const [newSpecialist, setNewSpecialist] = useState({
+    name: '',
+    specialty: '',
+    niche: '',
+    customPrompt: '',
+    personality: '',
+    skills: '',
+    avatar: ''
+  });
+
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
   const handleProfileChange = (field: string, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
@@ -76,6 +119,35 @@ const Settings = () => {
     return tokens.toString();
   };
 
+  const handleCreateSpecialist = () => {
+    const id = specialists.length + 1;
+    const specialist = {
+      id,
+      name: newSpecialist.name,
+      specialty: newSpecialist.specialty,
+      status: "Active",
+      jobsCompleted: 0,
+      rating: 0,
+      created: new Date().toISOString().split('T')[0]
+    };
+    setSpecialists([...specialists, specialist]);
+    setNewSpecialist({
+      name: '',
+      specialty: '',
+      niche: '',
+      customPrompt: '',
+      personality: '',
+      skills: '',
+      avatar: ''
+    });
+    setShowCreateForm(false);
+    console.log('Created specialist with prompt:', newSpecialist.customPrompt);
+  };
+
+  const handleDeleteSpecialist = (id: number) => {
+    setSpecialists(specialists.filter(s => s.id !== id));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -93,7 +165,7 @@ const Settings = () => {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile" className="flex items-center space-x-2">
               <User className="w-4 h-4" />
               <span>Profile</span>
@@ -109,6 +181,10 @@ const Settings = () => {
             <TabsTrigger value="billing" className="flex items-center space-x-2">
               <CreditCard className="w-4 h-4" />
               <span>Billing</span>
+            </TabsTrigger>
+            <TabsTrigger value="admin" className="flex items-center space-x-2">
+              <SettingsIcon className="w-4 h-4" />
+              <span>Admin</span>
             </TabsTrigger>
           </TabsList>
 
@@ -325,6 +401,253 @@ const Settings = () => {
                   </Card>
                 ))}
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="admin">
+            <div className="space-y-6">
+              {/* Admin Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <Users className="w-8 h-8 text-blue-600" />
+                      <div>
+                        <p className="text-2xl font-bold">{adminStats.totalUsers}</p>
+                        <p className="text-sm text-gray-600">Total Users</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <MessageSquare className="w-8 h-8 text-green-600" />
+                      <div>
+                        <p className="text-2xl font-bold">{adminStats.activeSpecialists}</p>
+                        <p className="text-sm text-gray-600">AI Specialists</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <DollarSign className="w-8 h-8 text-yellow-600" />
+                      <div>
+                        <p className="text-2xl font-bold">${adminStats.monthlyRevenue}</p>
+                        <p className="text-sm text-gray-600">Monthly Revenue</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <TrendingUp className="w-8 h-8 text-purple-600" />
+                      <div>
+                        <p className="text-2xl font-bold">{adminStats.totalMessages}</p>
+                        <p className="text-sm text-gray-600">Total Messages</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* AI Specialists Management */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>AI Specialists Management</CardTitle>
+                  <Button
+                    onClick={() => setShowCreateForm(!showCreateForm)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create New Specialist
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  {showCreateForm && (
+                    <div className="mb-6 p-6 bg-gray-50 rounded-lg space-y-4">
+                      <h3 className="text-lg font-semibold">Create New AI Specialist</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Name
+                          </label>
+                          <Input
+                            value={newSpecialist.name}
+                            onChange={(e) => setNewSpecialist({...newSpecialist, name: e.target.value})}
+                            placeholder="e.g., Dr. Sarah Johnson"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Specialty
+                          </label>
+                          <Input
+                            value={newSpecialist.specialty}
+                            onChange={(e) => setNewSpecialist({...newSpecialist, specialty: e.target.value})}
+                            placeholder="e.g., Technical Writing Expert"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Niche
+                          </label>
+                          <Input
+                            value={newSpecialist.niche}
+                            onChange={(e) => setNewSpecialist({...newSpecialist, niche: e.target.value})}
+                            placeholder="e.g., Software Documentation"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Personality
+                          </label>
+                          <Input
+                            value={newSpecialist.personality}
+                            onChange={(e) => setNewSpecialist({...newSpecialist, personality: e.target.value})}
+                            placeholder="e.g., Professional and detail-oriented"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Skills (comma-separated)
+                        </label>
+                        <Input
+                          value={newSpecialist.skills}
+                          onChange={(e) => setNewSpecialist({...newSpecialist, skills: e.target.value})}
+                          placeholder="e.g., API Documentation, User Guides, Technical Tutorials"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Custom System Prompt
+                        </label>
+                        <Textarea
+                          value={newSpecialist.customPrompt}
+                          onChange={(e) => setNewSpecialist({...newSpecialist, customPrompt: e.target.value})}
+                          placeholder="Enter the system prompt that defines how this AI specialist should behave, respond, and approach tasks..."
+                          rows={4}
+                          className="w-full"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Avatar URL (optional)
+                        </label>
+                        <Input
+                          value={newSpecialist.avatar}
+                          onChange={(e) => setNewSpecialist({...newSpecialist, avatar: e.target.value})}
+                          placeholder="https://example.com/avatar.jpg"
+                        />
+                      </div>
+                      <div className="flex space-x-4">
+                        <Button
+                          onClick={handleCreateSpecialist}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          Create Specialist
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowCreateForm(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Specialty</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Jobs</TableHead>
+                        <TableHead>Rating</TableHead>
+                        <TableHead>Created</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {specialists.map((specialist) => (
+                        <TableRow key={specialist.id}>
+                          <TableCell className="font-medium">{specialist.name}</TableCell>
+                          <TableCell>{specialist.specialty}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              specialist.status === 'Active' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {specialist.status}
+                            </span>
+                          </TableCell>
+                          <TableCell>{specialist.jobsCompleted}</TableCell>
+                          <TableCell>{specialist.rating > 0 ? specialist.rating : 'N/A'}</TableCell>
+                          <TableCell>{specialist.created}</TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Button size="sm" variant="outline">
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDeleteSpecialist(specialist.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* System Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>System Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Default Token Allocation
+                      </label>
+                      <Input type="number" defaultValue="100000" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Max Messages Per Session
+                      </label>
+                      <Input type="number" defaultValue="50" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Global System Message
+                    </label>
+                    <Textarea
+                      placeholder="Enter global instructions that apply to all AI specialists..."
+                      rows={3}
+                    />
+                  </div>
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    Save System Settings
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
