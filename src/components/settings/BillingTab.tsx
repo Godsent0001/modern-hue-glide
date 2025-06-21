@@ -1,0 +1,98 @@
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Check } from 'lucide-react';
+
+interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  tokens: number;
+  features: string[];
+  current: boolean;
+}
+
+interface BillingTabProps {
+  availableTokens: number;
+  plans: Plan[];
+  onPayNow: (planId: string) => void;
+  formatTokens: (tokens: number) => string;
+}
+
+const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingTabProps) => {
+  return (
+    <div className="space-y-6">
+      {/* Available Tokens Display */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Available Tokens</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-4">
+            <div className="text-3xl font-bold text-blue-600">
+              {formatTokens(availableTokens)}
+            </div>
+            <div className="text-gray-600">
+              tokens remaining
+            </div>
+          </div>
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full" 
+              style={{ width: `${(availableTokens / 1000000) * 100}%` }}
+            ></div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Pricing Plans */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {plans.map((plan) => (
+          <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''}`}>
+            {plan.current && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+                  Current Plan
+                </span>
+              </div>
+            )}
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl">{plan.name}</CardTitle>
+              <div className="text-3xl font-bold">
+                {plan.price === 0 ? 'Free' : `$${plan.price}`}
+              </div>
+              <p className="text-gray-600">
+                {formatTokens(plan.tokens)} tokens
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ul className="space-y-2">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-center space-x-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    <span className="text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              {plan.id !== 'free' && (
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={() => onPayNow(plan.id)}
+                >
+                  Pay Now
+                </Button>
+              )}
+              {plan.current && (
+                <div className="text-center text-sm text-gray-600">
+                  Your current plan
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default BillingTab;
