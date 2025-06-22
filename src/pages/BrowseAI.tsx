@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X, ArrowLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import Navigation from '@/components/Navigation';
@@ -271,6 +272,14 @@ const BrowseAI = () => {
     navigate(`/chat/${freelancer.id}`, { state: { freelancer } });
   };
 
+  const handleViewProfile = (freelancer: any) => {
+    navigate(`/ai-specialist/${freelancer.id}`, { state: { freelancer } });
+  };
+
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -307,10 +316,17 @@ const BrowseAI = () => {
           {showSubcategories && selectedCategory !== 'all' && (
             <div className="flex items-center mb-6 text-sm text-gray-600">
               <button 
-                onClick={handleBackToCategories}
+                onClick={handleBackToHome}
                 className="flex items-center hover:text-blue-600 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
+                Home
+              </button>
+              <ChevronRight className="w-4 h-4 mx-2" />
+              <button 
+                onClick={handleBackToCategories}
+                className="hover:text-blue-600 transition-colors"
+              >
                 All Categories
               </button>
               <ChevronRight className="w-4 h-4 mx-2" />
@@ -471,7 +487,12 @@ const BrowseAI = () => {
                       </div>
 
                       <div className="flex space-x-2 pt-2">
-                        <Button variant="outline" className="flex-1" size="sm">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1" 
+                          size="sm"
+                          onClick={() => handleViewProfile(freelancer)}
+                        >
                           View Profile
                         </Button>
                         <Button 

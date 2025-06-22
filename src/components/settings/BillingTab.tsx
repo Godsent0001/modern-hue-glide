@@ -85,20 +85,21 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
         {updatedPlans.map((plan) => (
           <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''} ${plan.id === 'gold' ? 'border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50' : ''}`}>
             {plan.current && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
                   Current Plan
                 </span>
               </div>
             )}
             {plan.id === 'gold' && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1 rounded-full">
-                  ⭐ Gold Member
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center">
+                  <span className="mr-1">⭐</span>
+                  Gold Member
                 </span>
               </div>
             )}
-            <CardHeader className="text-center">
+            <CardHeader className="text-center pt-6">
               <CardTitle className={`text-xl ${plan.id === 'gold' ? 'text-yellow-700' : ''}`}>{plan.name}</CardTitle>
               <div className={`text-3xl font-bold ${plan.id === 'gold' ? 'text-yellow-600' : ''}`}>
                 {plan.price === 0 ? 'Free' : `$${plan.price}`}
@@ -111,14 +112,14 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
               <ul className="space-y-2">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center space-x-2">
-                    <Check className="w-4 h-4 text-green-500" />
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
               {plan.id !== 'free' && (
                 <Button 
-                  className={`w-full ${plan.id === 'gold' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}
+                  className={`w-full ${plan.id === 'gold' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white' : 'bg-blue-600 hover:bg-blue-700'}`}
                   onClick={() => onPayNow(plan.id)}
                 >
                   Pay Now
