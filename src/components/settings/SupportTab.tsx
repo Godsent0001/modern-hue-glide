@@ -2,9 +2,24 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { MessageCircle, Mail, Phone, Clock } from 'lucide-react';
+import { MessageCircle, Mail, Phone, Clock, MessageSquare } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const SupportTab = () => {
+  const navigate = useNavigate();
+
+  const handleEmailClick = () => {
+    window.location.href = 'mailto:support@aifreelance.com?subject=Support Request';
+  };
+
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/1234567890?text=Hello, I need support with AI Freelance platform', '_blank');
+  };
+
+  const handleLiveChatClick = () => {
+    navigate('/live-chat');
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -13,27 +28,36 @@ const SupportTab = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+            <button
+              onClick={handleLiveChatClick}
+              className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors w-full text-left"
+            >
               <MessageCircle className="w-8 h-8 text-blue-600" />
               <div>
                 <h3 className="font-medium">Live Chat</h3>
-                <p className="text-sm text-gray-600">24/7 support</p>
+                <p className="text-sm text-gray-600">Chat with our support team</p>
               </div>
-            </div>
-            <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
+            </button>
+            <button
+              onClick={handleEmailClick}
+              className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors w-full text-left"
+            >
               <Mail className="w-8 h-8 text-green-600" />
               <div>
                 <h3 className="font-medium">Email</h3>
                 <p className="text-sm text-gray-600">support@aifreelance.com</p>
               </div>
-            </div>
-            <div className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg">
-              <Phone className="w-8 h-8 text-purple-600" />
+            </button>
+            <button
+              onClick={handleWhatsAppClick}
+              className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors w-full text-left"
+            >
+              <MessageSquare className="w-8 h-8 text-purple-600" />
               <div>
-                <h3 className="font-medium">Phone</h3>
-                <p className="text-sm text-gray-600">+1 (555) 123-4567</p>
+                <h3 className="font-medium">WhatsApp</h3>
+                <p className="text-sm text-gray-600">Chat on WhatsApp</p>
               </div>
-            </div>
+            </button>
           </div>
 
           <div className="border-t pt-6">
