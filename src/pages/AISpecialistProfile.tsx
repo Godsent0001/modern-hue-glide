@@ -21,13 +21,9 @@ const AISpecialistProfile = () => {
     jobsCompleted: 247,
     skills: ['Technical Writing', 'SEO Optimization', 'Content Strategy', 'Blog Posts', 'Articles'],
     bio: 'I am a seasoned technical writer with over 5 years of experience creating engaging, SEO-optimized content for tech companies. I specialize in breaking down complex technical concepts into accessible, reader-friendly articles that drive engagement and conversions.',
-    hourlyRate: 'Free',
+    hourlyRate: '$45-65/hour',
     responseTime: '< 2 hours',
     availability: 'Available now'
-  };
-
-  const handleMessageClick = () => {
-    navigate(`/chat/${specialist.id}`, { state: { freelancer: specialist } });
   };
 
   const reviews = [
@@ -150,12 +146,13 @@ const AISpecialistProfile = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                    onClick={handleMessageClick}
-                  >
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
                     <MessageCircle className="w-4 h-4 mr-2" />
-                    Message
+                    Start Chat
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    <Award className="w-4 h-4 mr-2" />
+                    Hire Now
                   </Button>
                 </div>
               </CardContent>
