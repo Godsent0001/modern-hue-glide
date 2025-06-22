@@ -25,10 +25,15 @@ const Navigation = () => {
   };
 
   const handleNavClick = (href: string) => {
-    if (href.startsWith('#') && location.pathname === '/') {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+    if (href.startsWith('#')) {
+      if (location.pathname !== '/') {
+        // Navigate to home first, then scroll to section
+        navigate('/' + href);
+      } else {
+        const element = document.querySelector(href);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     }
     setIsOpen(false);
@@ -77,8 +82,11 @@ const Navigation = () => {
                   <a
                     key={item.name}
                     href={item.href}
-                    onClick={() => handleNavClick(item.href)}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:text-blue-600 ${
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick(item.href);
+                    }}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:text-blue-600 cursor-pointer ${
                       isActive(item.href) ? 'text-blue-600' : 'text-gray-700'
                     }`}
                   >
@@ -166,8 +174,11 @@ const Navigation = () => {
                   <a
                     key={item.name}
                     href={item.href}
-                    onClick={() => handleNavClick(item.href)}
-                    className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick(item.href);
+                    }}
+                    className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 cursor-pointer"
                   >
                     {item.name}
                   </a>
