@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Users, DollarSign, MessageSquare, TrendingUp, Ban, UserCheck, Mail, Megaphone, FileText, Activity, Eye, Calendar, AlertTriangle, Plus, Edit, Trash2 } from 'lucide-react';
+import { Users, DollarSign, MessageSquare, TrendingUp, Ban, UserCheck, Mail, Megaphone, FileText, Activity, Eye, Calendar, AlertTriangle, Plus, Edit, Trash2, UserMinus } from 'lucide-react';
 
 interface AdminStats {
   totalUsers: number;
@@ -115,7 +115,7 @@ const AdminTab = ({
               <Users className="w-8 h-8 text-blue-600" />
               <div>
                 <p className="text-2xl font-bold">{adminStats.totalUsers}</p>
-                <p className="text-sm text-gray-600">Total Users</p>
+                <p className="text-sm text-gray-600">Total Sign-ups</p>
               </div>
             </div>
           </CardContent>
@@ -148,7 +148,7 @@ const AdminTab = ({
               <UserCheck className="w-8 h-8 text-orange-600" />
               <div>
                 <p className="text-2xl font-bold">{adminStats.loggedInUsers}</p>
-                <p className="text-sm text-gray-600">Logged In Users</p>
+                <p className="text-sm text-gray-600">Currently Online</p>
               </div>
             </div>
           </CardContent>
@@ -256,6 +256,17 @@ const AdminTab = ({
                           <UserCheck className="w-4 h-4" />
                         </Button>
                       )}
+                      {user.role === 'Admin' && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => onUserAction(user.id, 'removeAdmin')}
+                          title="Remove Admin"
+                          className="text-orange-600 hover:text-orange-700"
+                        >
+                          <UserMinus className="w-4 h-4" />
+                        </Button>
+                      )}
                       {user.status === 'Active' && (
                         <Button 
                           size="sm" 
@@ -265,6 +276,17 @@ const AdminTab = ({
                           className="text-yellow-600 hover:text-yellow-700"
                         >
                           <Ban className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {user.status === 'Suspended' && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => onUserAction(user.id, 'activate')}
+                          title="Unsuspend User"
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          <UserCheck className="w-4 h-4" />
                         </Button>
                       )}
                       <Button 
@@ -674,20 +696,6 @@ const AdminTab = ({
           <CardTitle>System Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Default Token Allocation
-              </label>
-              <Input type="number" defaultValue="100000" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Max Messages Per Session
-              </label>
-              <Input type="number" defaultValue="50" />
-            </div>
-          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Global System Message

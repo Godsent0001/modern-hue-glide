@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Send, ArrowLeft, Star, Clock } from 'lucide-react';
+import { Send, ArrowLeft, Star, Clock, Upload, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Navigation from '@/components/Navigation';
@@ -15,6 +15,7 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [status, setStatus] = useState('active');
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [availableTokens] = useState(250000); // Mock available tokens
   
   // Get freelancer data from location state or create default
   const freelancer = location.state?.freelancer || {
@@ -88,9 +89,32 @@ const ChatPage = () => {
     }, 1000);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileMessage = {
+        id: messages.length + 1,
+        sender: 'user',
+        content: `Uploaded file: ${file.name}`,
+        timestamp: new Date(),
+        file: file.name
+      };
+      setMessages(prev => [...prev, fileMessage]);
+    }
+  };
+
   const handleRating = (rating: number, review: string) => {
     console.log('Rating submitted:', { rating, review, freelancer: freelancer.id });
     // In a real app, this would save the rating to your backend
+  };
+
+  const formatTokens = (tokens: number) => {
+    if (tokens >= 1000000) {
+      return `${(tokens / 1000000).toFixed(1)}M`;
+    } else if (tokens >= 1000) {
+      return `${(tokens / 1000).toFixed(0)}K`;
+    }
+    return tokens.toString();
   };
 
   const getStatusColor = () => {
@@ -130,38 +154,44 @@ const ChatPage = () => {
             
             <Card>
               <CardHeader className="pb-4">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={freelancer.avatar}
-                    alt={freelancer.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-gray-900">{freelancer.name}</h1>
-                    <p className="text-blue-600 font-medium">{freelancer.specialty}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                        <span>{freelancer.rating}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
-                        <span>{freelancer.responseTime}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 ${getStatusColor()} rounded-full`}></div>
-                        <span>{getStatusText()}</span>
-                        {status === 'delivered' && (
-                          <Button 
-                            size="sm" 
-                            onClick={() => setShowRatingModal(true)}
-                            className="ml-2 bg-blue-600 hover:bg-blue-700"
-                          >
-                            Rate
-                          </Button>
-                        )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={freelancer.avatar}
+                      alt={freelancer.name}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <h1 className="text-2xl font-bold text-gray-900">{freelancer.name}</h1>
+                      <p className="text-blue-600 font-medium">{freelancer.specialty}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                          <span>{freelancer.rating}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          <span>{freelancer.responseTime}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 ${getStatusColor()} rounded-full`}></div>
+                          <span>{getStatusText()}</span>
+                          {status === 'delivered' && (
+                            <Button 
+                              size="sm" 
+                              onClick={() => setShowRatingModal(true)}
+                              className="ml-2 bg-blue-600 hover:bg-blue-700"
+                            >
+                              Rate
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
+                  </div>
+                  <div className="flex items-center space-x-1 text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                    <Coins className="w-4 h-4" />
+                    <span>{formatTokens(availableTokens)} tokens</span>
                   </div>
                 </div>
               </CardHeader>
@@ -189,6 +219,9 @@ const ChatPage = () => {
                           : 'bg-gray-100 text-gray-900'
                       }`}
                     >
+                      {message.file && (
+                        <div className="text-xs opacity-75 mb-1">📎 {message.file}</div>
+                      )}
                       {message.content}
                     </div>
                   </div>
@@ -197,6 +230,17 @@ const ChatPage = () => {
 
               {/* Message Input */}
               <form onSubmit={handleSendMessage} className="flex space-x-2">
+                <input
+                  type="file"
+                  id="file-upload"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                <label htmlFor="file-upload">
+                  <Button type="button" variant="outline" size="sm" className="px-2">
+                    <Upload className="w-4 h-4" />
+                  </Button>
+                </label>
                 <input
                   type="text"
                   value={newMessage}

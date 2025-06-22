@@ -44,6 +44,14 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
       tokens: 1000000,
       features: ['1,000,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration', 'White-label solutions'],
       current: false
+    },
+    {
+      id: 'gold',
+      name: 'Gold Member',
+      price: 15.99,
+      tokens: 10000000,
+      features: ['10,000,000 tokens', 'Access to all AI models', '24/7 VIP support', 'Priority processing', 'Custom AI training', 'Enterprise features', 'Dedicated account manager'],
+      current: false
     }
   ];
 
@@ -66,16 +74,16 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
           <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
             <div 
               className="bg-blue-600 h-2 rounded-full" 
-              style={{ width: `${(availableTokens / 1000000) * 100}%` }}
+              style={{ width: `${(availableTokens / 10000000) * 100}%` }}
             ></div>
           </div>
         </CardContent>
       </Card>
 
       {/* Pricing Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {updatedPlans.map((plan) => (
-          <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''}`}>
+          <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''} ${plan.id === 'gold' ? 'border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50' : ''}`}>
             {plan.current && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
@@ -83,9 +91,16 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
                 </span>
               </div>
             )}
+            {plan.id === 'gold' && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1 rounded-full">
+                  ⭐ Gold Member
+                </span>
+              </div>
+            )}
             <CardHeader className="text-center">
-              <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <div className="text-3xl font-bold">
+              <CardTitle className={`text-xl ${plan.id === 'gold' ? 'text-yellow-700' : ''}`}>{plan.name}</CardTitle>
+              <div className={`text-3xl font-bold ${plan.id === 'gold' ? 'text-yellow-600' : ''}`}>
                 {plan.price === 0 ? 'Free' : `$${plan.price}`}
               </div>
               <p className="text-gray-600">
@@ -103,7 +118,7 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
               </ul>
               {plan.id !== 'free' && (
                 <Button 
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className={`w-full ${plan.id === 'gold' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}
                   onClick={() => onPayNow(plan.id)}
                 >
                   Pay Now

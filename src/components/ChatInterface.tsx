@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Send, X } from 'lucide-react';
+import { Send, X, Upload, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Message {
@@ -8,6 +8,7 @@ interface Message {
   sender: 'user' | 'ai';
   content: string;
   timestamp: Date;
+  file?: string;
 }
 
 interface ChatInterfaceProps {
@@ -31,6 +32,7 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
     }
   ]);
   const [newMessage, setNewMessage] = useState('');
+  const [availableTokens] = useState(250000); // Mock available tokens
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +60,29 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
     }, 1000);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileMessage: Message = {
+        id: messages.length + 1,
+        sender: 'user',
+        content: `Uploaded file: ${file.name}`,
+        timestamp: new Date(),
+        file: file.name
+      };
+      setMessages(prev => [...prev, fileMessage]);
+    }
+  };
+
+  const formatTokens = (tokens: number) => {
+    if (tokens >= 1000000) {
+      return `${(tokens / 1000000).toFixed(1)}M`;
+    } else if (tokens >= 1000) {
+      return `${(tokens / 1000).toFixed(0)}K`;
+    }
+    return tokens.toString();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -76,9 +101,15 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
               <p className="text-sm text-gray-600">{freelancer.specialty}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+              <Coins className="w-3 h-3" />
+              <span>{formatTokens(availableTokens)}</span>
+            </div>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Messages */}
@@ -95,6 +126,9 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
                     : 'bg-gray-100 text-gray-900'
                 }`}
               >
+                {message.file && (
+                  <div className="text-xs opacity-75 mb-1">📎 {message.file}</div>
+                )}
                 {message.content}
               </div>
             </div>
@@ -104,6 +138,17 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
         {/* Message Input */}
         <form onSubmit={handleSendMessage} className="p-4 border-t">
           <div className="flex space-x-2">
+            <input
+              type="file"
+              id="file-upload"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+            <label htmlFor="file-upload">
+              <Button type="button" variant="outline" size="sm" className="px-2">
+                <Upload className="w-4 h-4" />
+              </Button>
+            </label>
             <input
               type="text"
               value={newMessage}
