@@ -105,6 +105,31 @@ const AdminTab = ({
   onAddFaq,
   onDeleteFaq
 }: AdminTabProps) => {
+  const [portfolioItems, setPortfolioItems] = useState<any[]>([]);
+
+  const addPortfolioItem = () => {
+    const newItem = {
+      id: Date.now(),
+      title: '',
+      description: '',
+      image: '',
+      tags: ''
+    };
+    setPortfolioItems([...portfolioItems, newItem]);
+  };
+
+  const updatePortfolioItem = (id: number, field: string, value: string) => {
+    setPortfolioItems(prev => 
+      prev.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
+  };
+
+  const removePortfolioItem = (id: number) => {
+    setPortfolioItems(prev => prev.filter(item => item.id !== id));
+  };
+
   return (
     <div className="space-y-6">
       {/* Enhanced Admin Stats */}
@@ -401,6 +426,65 @@ const AdminTab = ({
                   placeholder="https://example.com/avatar.jpg"
                 />
               </div>
+
+              {/* Portfolio Management Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Portfolio Items
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addPortfolioItem}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Portfolio Item
+                  </Button>
+                </div>
+                
+                {portfolioItems.map((item) => (
+                  <div key={item.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">Portfolio Item</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removePortfolioItem(item.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Input
+                        placeholder="Portfolio title..."
+                        value={item.title}
+                        onChange={(e) => updatePortfolioItem(item.id, 'title', e.target.value)}
+                      />
+                      <Input
+                        placeholder="Image URL..."
+                        value={item.image}
+                        onChange={(e) => updatePortfolioItem(item.id, 'image', e.target.value)}
+                      />
+                    </div>
+                    <Textarea
+                      placeholder="Portfolio description..."
+                      value={item.description}
+                      onChange={(e) => updatePortfolioItem(item.id, 'description', e.target.value)}
+                      rows={2}
+                    />
+                    <Input
+                      placeholder="Tags (comma-separated)..."
+                      value={item.tags}
+                      onChange={(e) => updatePortfolioItem(item.id, 'tags', e.target.value)}
+                    />
+                  </div>
+                ))}
+              </div>
+
               <div className="flex space-x-4">
                 <Button
                   onClick={showEditForm ? onUpdateSpecialist : onCreateSpecialist}
@@ -414,6 +498,7 @@ const AdminTab = ({
                     setShowCreateForm(false);
                     setShowEditForm(false);
                     setEditingSpecialist(null);
+                    setPortfolioItems([]);
                     setNewSpecialist({
                       name: '',
                       specialty: '',

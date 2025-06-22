@@ -1,265 +1,153 @@
 
-import { Code, Palette, PenTool, Camera, Megaphone, BarChart3, Video, Music, FileText, Users, Briefcase, GraduationCap, Newspaper, Building, Sparkles, Edit, BookOpen, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { FileText, Edit, Briefcase, PenTool, GraduationCap, Newspaper, Users, Scale, Lightbulb, CheckSquare, Megaphone, Zap } from 'lucide-react';
 
-const Categories = () => {
-  const navigate = useNavigate();
-  const [showAll, setShowAll] = useState(false);
+interface CategoriesProps {
+  onCategorySelect: (category: string, subcategories: string[]) => void;
+}
 
+const Categories = ({ onCategorySelect }: CategoriesProps) => {
   const categories = [
     {
-      icon: PenTool,
-      title: "Content Writing",
-      count: "85+ specialists",
-      description: "Blog posts, website content, landing pages, articles, SEO content",
-      subcategories: [
-        "Blog Posts",
-        "Website Content", 
-        "Landing Pages",
-        "Articles",
-        "SEO Content",
-        "Category Descriptions"
-      ]
-    },
-    {
-      icon: Megaphone,
-      title: "Copywriting",
-      count: "70+ specialists",
-      description: "Persuasive writing aimed at conversion, sales pages, ad copy",
-      subcategories: [
-        "Sales Pages",
-        "Ad Copy",
-        "Email Marketing Campaigns",
-        "Product Launch Copy",
-        "Slogans and Taglines",
-        "Video Scripts for Ads",
-        "Social Media Copy",
-        "Influencer and Brand Pitch Writing"
-      ]
-    },
-    {
-      icon: Briefcase,
-      title: "Business Writing",
-      count: "60+ specialists",
-      description: "Business proposals, reports, presentations, executive summaries",
-      subcategories: [
-        "Business Proposals",
-        "Reports",
-        "Presentations",
-        "Executive Summaries",
-        "Policies and Procedures",
-        "Corporate Emails",
-        "Stakeholder Letters",
-        "Press Releases"
-      ]
-    },
-    {
-      icon: Users,
-      title: "Ghost Writing",
-      count: "45+ specialists",
-      description: "Books, ebooks, blog posts, autobiographies, whitepapers",
-      subcategories: [
-        "Fiction Books",
-        "Non-Fiction Books",
-        "Ebooks",
-        "Blog Posts",
-        "Autobiographies",
-        "Whitepapers",
-        "LinkedIn Posts",
-        "YouTube/Podcast Scripts"
-      ]
-    },
-    {
-      icon: GraduationCap,
-      title: "Academic Writing",
-      count: "55+ specialists",
-      description: "Educational and research writing, research papers, essays",
-      subcategories: [
-        "Research Papers",
-        "Essays",
-        "Literature Reviews",
-        "Case Study Analysis",
-        "Academic Editing",
-        "Homework Assistance",
-        "Lesson Plans",
-        "Educational Materials"
-      ]
-    },
-    {
-      icon: Newspaper,
-      title: "Journalism and Editorial",
-      count: "35+ specialists",
-      description: "Professional reporting and editorial content, news articles",
-      subcategories: [
-        "News Articles",
-        "Editorial Content",
-        "Feature Stories",
-        "Investigative Reports"
-      ]
-    },
-    {
+      name: 'Content Writing',
       icon: FileText,
-      title: "Resume and Career Writing",
-      count: "40+ specialists",
-      description: "Resumes, cover letters, LinkedIn optimization, executive bios",
-      subcategories: [
-        "Resumes",
-        "Cover Letters",
-        "LinkedIn Profile Optimization",
-        "Executive Bios",
-        "Academic CVs",
-        "International CVs"
-      ]
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      description: 'Blog posts, articles, and web content',
+      subcategories: ['Blog Posts', 'Website Content', 'Articles', 'Product Descriptions', 'Social Media Content']
     },
     {
-      icon: Building,
-      title: "Legal and Financial Writing",
-      count: "25+ specialists",
-      description: "Case briefs, contract summaries, investment reports",
-      subcategories: [
-        "Case Briefs",
-        "Contract Summaries",
-        "Investment Reports",
-        "Financial Analysis",
-        "Compliance Documentation",
-        "Policy Drafting"
-      ]
-    },
-    {
-      icon: BookOpen,
-      title: "Creative Writing",
-      count: "65+ specialists",
-      description: "Short stories, poetry, scripts, novels, screenplays",
-      subcategories: [
-        "Short Stories",
-        "Poetry",
-        "Film Scripts",
-        "TV Scripts",
-        "Theater Scripts",
-        "Novels",
-        "Screenplays",
-        "Video Game Narratives",
-        "Comic Scripts",
-        "Audio Drama Scripts"
-      ]
-    },
-    {
+      name: 'Copywriting',
       icon: Edit,
-      title: "Editing and Proofreading",
-      count: "50+ specialists",
-      description: "Developmental editing, copyediting, proofreading, line editing",
-      subcategories: [
-        "Developmental Editing",
-        "Copyediting",
-        "Proofreading",
-        "Line Editing",
-        "Fact-Checking",
-        "Formatting for Publication",
-        "Sensitivity Reading"
-      ]
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      description: 'Sales copy, ads, and marketing content',
+      subcategories: ['Sales Pages', 'Ad Copy', 'Email Marketing Campaigns', 'Landing Pages', 'Product Copy']
     },
     {
-      icon: BarChart3,
-      title: "Marketing Content Creation",
-      count: "75+ specialists",
-      description: "Brochures, infographics, case studies, testimonials",
-      subcategories: [
-        "Brochures",
-        "Infographic Copy",
-        "Case Studies",
-        "One-Pagers",
-        "Client Testimonials",
-        "Quora/Reddit Content",
-        "YouTube Descriptions",
-        "Podcast Show Notes",
-        "Webinar Content",
-        "Slide Decks"
-      ]
+      name: 'Business Writing',
+      icon: Briefcase,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      description: 'Professional documents and communications',
+      subcategories: ['Business Proposals', 'Reports', 'Presentations', 'Business Plans', 'White Papers']
     },
     {
+      name: 'Ghost Writing',
+      icon: PenTool,
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
+      description: 'Books, eBooks, and long-form content',
+      subcategories: ['Books', 'eBooks', 'Memoirs', 'Speeches', 'Thought Leadership']
+    },
+    {
+      name: 'Academic Writing',
+      icon: GraduationCap,
+      color: 'text-red-600',
+      bgColor: 'bg-red-50',
+      description: 'Research papers, essays, and academic content',
+      subcategories: ['Research Papers', 'Essays', 'Dissertations', 'Literature Reviews', 'Case Studies']
+    },
+    {
+      name: 'Journalism and Editorial',
+      icon: Newspaper,
+      color: 'text-yellow-600',
+      bgColor: 'bg-yellow-50',
+      description: 'News articles, interviews, and editorial content',
+      subcategories: ['News Articles', 'Interviews', 'Editorial Content', 'Press Releases', 'Feature Stories']
+    },
+    {
+      name: 'Resume and Career Writing',
+      icon: Users,
+      color: 'text-pink-600',
+      bgColor: 'bg-pink-50',
+      description: 'CVs, cover letters, and career documents',
+      subcategories: ['Resumes', 'Cover Letters', 'LinkedIn Profiles', 'Career Coaching', 'Job Applications']
+    },
+    {
+      name: 'Legal and Financial Writing',
+      icon: Scale,
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-50',
+      description: 'Legal documents and financial content',
+      subcategories: ['Legal Documents', 'Financial Reports', 'Compliance Writing', 'Terms & Conditions', 'Privacy Policies']
+    },
+    {
+      name: 'Creative Writing',
       icon: Lightbulb,
-      title: "Emerging Writings",
-      count: "30+ specialists",
-      description: "AI prompt writing, UX writing, avatar scripting",
-      subcategories: [
-        "AI Prompt Writing",
-        "UX Writing",
-        "Avatar Scripting",
-        "Chatbot Content",
-        "Voice Interface Content"
-      ]
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      description: 'Stories, scripts, and creative content',
+      subcategories: ['Short Stories', 'Poetry', 'Screenplays', 'Creative Fiction', 'Song Lyrics']
+    },
+    {
+      name: 'Editing and Proofreading',
+      icon: CheckSquare,
+      color: 'text-teal-600',
+      bgColor: 'bg-teal-50',
+      description: 'Content review, editing, and proofreading',
+      subcategories: ['Copy Editing', 'Proofreading', 'Line Editing', 'Content Review', 'Style Guide Creation']
+    },
+    {
+      name: 'Marketing Content Creation',
+      icon: Megaphone,
+      color: 'text-cyan-600',
+      bgColor: 'bg-cyan-50',
+      description: 'Marketing materials and brand content',
+      subcategories: ['Brand Content', 'Marketing Campaigns', 'Brochures', 'Case Studies', 'Testimonials']
+    },
+    {
+      name: 'Emerging Writings',
+      icon: Zap,
+      color: 'text-violet-600',
+      bgColor: 'bg-violet-50',
+      description: 'AI prompts, chatbot scripts, and modern content',
+      subcategories: ['AI Prompts', 'Chatbot Scripts', 'Voice Search Content', 'Interactive Content', 'Micro-Content']
     }
   ];
 
-  const handleCategoryClick = (category: any) => {
-    navigate(`/browse-ai?category=${encodeURIComponent(category.title)}`, {
-      state: { subcategories: category.subcategories }
-    });
-  };
-
-  const displayedCategories = showAll ? categories : categories.slice(0, 6);
-
   return (
-    <section id="categories" className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50" id="categories">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Browse by Category
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Find AI specialists with unique personalities and expertise for your specific needs
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Writing Categories</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explore our comprehensive range of AI writing specialists across various domains
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedCategories.map((category, index) => (
-            <Card 
-              key={index} 
-              className="hover:shadow-xl transition-all duration-300 cursor-pointer border-gray-200 h-full hover:scale-105"
-              onClick={() => handleCategoryClick(category)}
-            >
-              <CardHeader className="pb-4">
-                <div className="w-16 h-16 rounded-xl bg-blue-100 flex items-center justify-center mb-6">
-                  <category.icon className="w-8 h-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-xl font-semibold text-gray-900 mb-3">
-                  {category.title}
-                </CardTitle>
-                <p className="text-sm text-blue-600 font-medium mb-2">
-                  {category.count}
-                </p>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                  {category.description}
-                </p>
-                <div className="text-xs text-gray-500">
-                  Click to view subcategories →
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {categories.map((category) => {
+            const IconComponent = category.icon;
+            return (
+              <Card 
+                key={category.name} 
+                className="hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                onClick={() => onCategorySelect(category.name, category.subcategories)}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className={`w-16 h-16 ${category.bgColor} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className={`w-8 h-8 ${category.color}`} />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                    {category.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {category.description}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         <div className="text-center mt-12">
-          <Button
-            onClick={() => setShowAll(!showAll)}
-            variant="outline"
-            className="px-8 py-3 text-lg"
+          <button 
+            onClick={() => onCategorySelect('Browse AI', [])}
+            className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 font-semibold"
           >
-            {showAll ? (
-              <>
-                See Less <ChevronUp className="w-5 h-5 ml-2" />
-              </>
-            ) : (
-              <>
-                See More <ChevronDown className="w-5 h-5 ml-2" />
-              </>
-            )}
-          </Button>
+            Browse All AI Specialists
+          </button>
         </div>
       </div>
     </section>
