@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Users, DollarSign, MessageSquare, TrendingUp, Ban, UserCheck, Mail, Megaphone, FileText, Activity, Eye, Calendar, AlertTriangle, Plus, Edit, Trash2, UserMinus, Portfolio, Code, FileCode } from 'lucide-react';
+import { Users, DollarSign, MessageSquare, TrendingUp, Ban, UserCheck, Mail, Megaphone, FileText, Activity, Eye, Calendar, AlertTriangle, Plus, Edit, Trash2, UserMinus, Briefcase, Code, FileCode } from 'lucide-react';
 
 interface AdminStats {
   totalUsers: number;
@@ -539,7 +539,7 @@ const AdminTab = ({
                           onClick={() => setShowPortfolioForm(showPortfolioForm === specialist.id ? null : specialist.id)}
                           title="Manage Portfolio"
                         >
-                          <Portfolio className="w-4 h-4" />
+                          <Briefcase className="w-4 h-4" />
                         </Button>
                         <Button 
                           size="sm" 
