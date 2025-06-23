@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X, ArrowLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import Navigation from '@/components/Navigation';
@@ -14,6 +13,7 @@ const BrowseAI = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [selectedSubcategory, setSelectedSubcategory] = useState('all');
+  const [selectedRating, setSelectedRating] = useState('all');
   const [activeTab, setActiveTab] = useState('browse');
   const [selectedFreelancer, setSelectedFreelancer] = useState<any>(null);
   const [showChat, setShowChat] = useState(false);
@@ -21,11 +21,9 @@ const BrowseAI = () => {
   const [newMessage, setNewMessage] = useState('');
   const [showSubcategories, setShowSubcategories] = useState(false);
 
-  // Get subcategories from navigation state
   const subcategories = location.state?.subcategories || [];
 
   useEffect(() => {
-    // Scroll to top when page loads
     window.scrollTo(0, 0);
     
     if (searchParams.get('search')) {
@@ -40,7 +38,6 @@ const BrowseAI = () => {
   }, [searchParams]);
 
   const aiFreelancers = [
-    // Content Writing specialists
     {
       id: 1,
       name: "Sarah Chen",
@@ -80,8 +77,6 @@ const BrowseAI = () => {
       description: "Creating well-researched articles that establish authority and engage audiences",
       online: false
     },
-
-    // Copywriting specialists
     {
       id: 4,
       name: "Marcus Rodriguez",
@@ -121,8 +116,6 @@ const BrowseAI = () => {
       description: "Email campaigns that nurture leads and drive consistent sales",
       online: false
     },
-
-    // Business Writing specialists
     {
       id: 7,
       name: "Lisa Wang",
@@ -162,8 +155,6 @@ const BrowseAI = () => {
       description: "Compelling presentations that captivate audiences and drive action",
       online: true
     },
-
-    // Creative Writing specialists
     {
       id: 10,
       name: "Alex Morgan",
@@ -248,13 +239,27 @@ const BrowseAI = () => {
     "Marketing Content Creation", "Emerging Writings"
   ];
 
+  const ratingOptions = [
+    { value: 'all', label: 'All Ratings' },
+    { value: '4.5+', label: '4.5+ Stars' },
+    { value: '4.0+', label: '4.0+ Stars' },
+    { value: '3.5+', label: '3.5+ Stars' }
+  ];
+
   const filteredFreelancers = aiFreelancers.filter(freelancer => {
     const matchesSearch = freelancer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          freelancer.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          freelancer.subSpecialty.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || freelancer.specialty === selectedCategory;
     const matchesSubcategory = selectedSubcategory === 'all' || freelancer.subSpecialty === selectedSubcategory;
-    return matchesSearch && matchesCategory && matchesSubcategory;
+    
+    let matchesRating = true;
+    if (selectedRating !== 'all') {
+      const minRating = parseFloat(selectedRating.replace('+', ''));
+      matchesRating = freelancer.rating >= minRating;
+    }
+    
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesRating;
   });
 
   const handleBackToCategories = () => {
@@ -294,7 +299,6 @@ const BrowseAI = () => {
     setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
 
-    // Simulate AI response
     setTimeout(() => {
       const aiResponse = {
         id: messages.length + 2,
@@ -312,7 +316,6 @@ const BrowseAI = () => {
       
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumb */}
           {showSubcategories && selectedCategory !== 'all' && (
             <div className="flex items-center mb-6 text-sm text-gray-600">
               <button 
@@ -334,7 +337,6 @@ const BrowseAI = () => {
             </div>
           )}
 
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {showSubcategories && selectedCategory !== 'all' 
@@ -345,7 +347,6 @@ const BrowseAI = () => {
             <p className="text-gray-600">Connect with AI professionals tailored to your needs</p>
           </div>
 
-          {/* Subcategories */}
           {showSubcategories && subcategories.length > 0 && (
             <Card className="mb-8">
               <CardHeader>
@@ -375,7 +376,6 @@ const BrowseAI = () => {
             </Card>
           )}
 
-          {/* Tabs */}
           <div className="mb-8">
             <div className="border-b border-gray-200">
               <nav className="flex space-x-8">
@@ -419,9 +419,9 @@ const BrowseAI = () => {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
-                    {!showSubcategories && (
-                      <div className="flex items-center gap-4">
-                        <Filter className="text-gray-500 w-5 h-5" />
+                    <div className="flex items-center gap-4">
+                      <Filter className="text-gray-500 w-5 h-5" />
+                      {!showSubcategories && (
                         <select
                           value={selectedCategory}
                           onChange={(e) => setSelectedCategory(e.target.value)}
@@ -433,8 +433,19 @@ const BrowseAI = () => {
                             </option>
                           ))}
                         </select>
-                      </div>
-                    )}
+                      )}
+                      <select
+                        value={selectedRating}
+                        onChange={(e) => setSelectedRating(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        {ratingOptions.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

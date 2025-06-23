@@ -1,7 +1,6 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Send, ArrowLeft, Star, Clock, Upload, Coins } from 'lucide-react';
+import { Send, ArrowLeft, Star, Clock, Upload, Coins, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Navigation from '@/components/Navigation';
@@ -15,9 +14,10 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [status, setStatus] = useState('active');
   const [showRatingModal, setShowRatingModal] = useState(false);
-  const [availableTokens] = useState(250000); // Mock available tokens
+  const [availableTokens] = useState(250000);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Get freelancer data from location state or create default
   const freelancer = location.state?.freelancer || {
     id: parseInt(id || '1'),
     name: 'AI Specialist',
@@ -28,7 +28,6 @@ const ChatPage = () => {
     description: 'Professional AI specialist ready to help with your project.'
   };
 
-  // Status cycling effect
   useEffect(() => {
     const statuses = ['active', 'pending', 'delivered'];
     let currentIndex = 0;
@@ -42,7 +41,6 @@ const ChatPage = () => {
   }, []);
 
   useEffect(() => {
-    // Initialize chat with welcome message
     setMessages([
       {
         id: 1,
@@ -55,19 +53,24 @@ const ChatPage = () => {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && uploadedFiles.length === 0) return;
 
     const userMessage = {
       id: messages.length + 1,
       sender: 'user',
-      content: newMessage,
-      timestamp: new Date()
+      content: newMessage || (uploadedFiles.length > 0 ? 'Uploaded files' : ''),
+      timestamp: new Date(),
+      files: uploadedFiles.map(file => ({
+        name: file.name,
+        size: file.size,
+        type: file.type
+      }))
     };
 
     setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
+    setUploadedFiles([]);
 
-    // Simulate AI response
     setTimeout(() => {
       const responses = [
         "That sounds like an interesting project! I have experience with similar work. Let me know more details about your requirements and timeline.",
@@ -89,23 +92,17 @@ const ChatPage = () => {
     }, 1000);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const fileMessage = {
-        id: messages.length + 1,
-        sender: 'user',
-        content: `Uploaded file: ${file.name}`,
-        timestamp: new Date(),
-        file: file.name
-      };
-      setMessages(prev => [...prev, fileMessage]);
-    }
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setUploadedFiles(prev => [...prev, ...files]);
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleRating = (rating: number, review: string) => {
     console.log('Rating submitted:', { rating, review, freelancer: freelancer.id });
-    // In a real app, this would save the rating to your backend
   };
 
   const formatTokens = (tokens: number) => {
@@ -141,7 +138,6 @@ const ChatPage = () => {
       
       <div className="pt-20 pb-4">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
           <div className="mb-6">
             <Button
               variant="ghost"
@@ -219,8 +215,14 @@ const ChatPage = () => {
                           : 'bg-gray-100 text-gray-900'
                       }`}
                     >
-                      {message.file && (
-                        <div className="text-xs opacity-75 mb-1">📎 {message.file}</div>
+                      {message.files && message.files.length > 0 && (
+                        <div className="mb-2">
+                          {message.files.map((file: any, index: number) => (
+                            <div key={index} className="text-xs opacity-75 mb-1">
+                              📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                            </div>
+                          ))}
+                        </div>
                       )}
                       {message.content}
                     </div>
@@ -228,19 +230,50 @@ const ChatPage = () => {
                 ))}
               </div>
 
+              {/* File Upload Preview */}
+              {uploadedFiles.length > 0 && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-600 mb-2">Files to upload:</div>
+                  <div className="space-y-2">
+                    {uploadedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs">📎</span>
+                          <span className="text-sm">{file.name}</span>
+                          <span className="text-xs text-gray-500">({(file.size / 1024).toFixed(1)} KB)</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Message Input */}
               <form onSubmit={handleSendMessage} className="flex space-x-2">
                 <input
                   type="file"
-                  id="file-upload"
+                  ref={fileInputRef}
                   className="hidden"
-                  onChange={handleFileUpload}
+                  onChange={handleFileSelect}
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx,.txt"
                 />
-                <label htmlFor="file-upload">
-                  <Button type="button" variant="outline" size="sm" className="px-2">
-                    <Upload className="w-4 h-4" />
-                  </Button>
-                </label>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  className="px-2"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-4 h-4" />
+                </Button>
                 <input
                   type="text"
                   value={newMessage}

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,6 @@ const AISpecialistProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Mock data - in a real app, this would come from your API
   const specialist = {
     id: parseInt(id || '1'),
     name: 'Sarah Chen',
@@ -21,7 +19,7 @@ const AISpecialistProfile = () => {
     jobsCompleted: 247,
     skills: ['Technical Writing', 'SEO Optimization', 'Content Strategy', 'Blog Posts', 'Articles'],
     bio: 'I am a seasoned technical writer with over 5 years of experience creating engaging, SEO-optimized content for tech companies. I specialize in breaking down complex technical concepts into accessible, reader-friendly articles that drive engagement and conversions.',
-    hourlyRate: '$45-65/hour',
+    hourlyRate: 'Free',
     responseTime: '< 2 hours',
     availability: 'Available now'
   };
@@ -80,6 +78,22 @@ const AISpecialistProfile = () => {
     }
   ];
 
+  const handleMessage = () => {
+    navigate(`/chat/${specialist.id}`, { 
+      state: { 
+        freelancer: {
+          id: specialist.id,
+          name: specialist.name,
+          specialty: specialist.specialty,
+          avatar: specialist.avatar,
+          rating: specialist.rating,
+          responseTime: specialist.responseTime,
+          description: specialist.bio
+        }
+      } 
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -133,7 +147,7 @@ const AISpecialistProfile = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Rate</span>
-                    <span className="font-medium">{specialist.hourlyRate}</span>
+                    <span className="font-medium text-green-600">{specialist.hourlyRate}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Response Time</span>
@@ -146,13 +160,12 @@ const AISpecialistProfile = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    onClick={handleMessage}
+                  >
                     <MessageCircle className="w-4 h-4 mr-2" />
-                    Start Chat
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    <Award className="w-4 h-4 mr-2" />
-                    Hire Now
+                    Message
                   </Button>
                 </div>
               </CardContent>
