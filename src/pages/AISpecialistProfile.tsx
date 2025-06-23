@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Star, MessageCircle, Award, FileText, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Star, MessageCircle, Award, FileText } from 'lucide-react';
 
 const AISpecialistProfile = () => {
   const { id } = useParams();
@@ -246,7 +247,7 @@ const AISpecialistProfile = () => {
               <TabsContent value="portfolio">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {portfolio.map((item) => (
-                    <Card key={item.id} className="overflow-hidden">
+                    <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/portfolio/${item.id}`)}>
                       <div className="aspect-video relative">
                         <img
                           src={item.image}
@@ -268,7 +269,7 @@ const AISpecialistProfile = () => {
                           ))}
                         </div>
                         <Button variant="outline" size="sm" className="w-full">
-                          <ExternalLink className="w-4 h-4 mr-2" />
+                          <FileText className="w-4 h-4 mr-2" />
                           View Details
                         </Button>
                       </CardContent>
