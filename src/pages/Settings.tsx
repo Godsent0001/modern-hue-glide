@@ -97,7 +97,18 @@ const Settings = () => {
       niche: "Technology",
       customPrompt: "You are a technology blog writing specialist...",
       personality: "Professional and engaging",
-      skills: "Technical writing, SEO optimization, Content strategy"
+      skills: "Technical writing, SEO optimization, Content strategy",
+      codeName: "TECH_BLOG_01",
+      promptTemplate: "Write in a conversational yet professional tone. Use clear explanations for technical concepts. Include actionable insights and real-world examples.",
+      portfolios: [
+        {
+          id: 1,
+          title: "AI in Healthcare Blog Series",
+          description: "5-part series on AI applications in healthcare",
+          url: "https://example.com/ai-healthcare",
+          type: "project" as const
+        }
+      ]
     },
     {
       id: 2,
@@ -110,7 +121,17 @@ const Settings = () => {
       niche: "Marketing",
       customPrompt: "You are a conversion-focused copywriter...",
       personality: "Persuasive and results-driven",
-      skills: "Copywriting, Conversion optimization, A/B testing"
+      skills: "Copywriting, Conversion optimization, A/B testing",
+      codeName: "CONV_COPY_01",
+      promptTemplate: "Write with urgency and emotional appeal. Focus on benefits over features. Use power words and clear call-to-actions.",
+      portfolios: [
+        {
+          id: 1,
+          title: "SaaS Landing Page Campaign",
+          description: "High-converting landing page copy for B2B SaaS",
+          type: "project" as const
+        }
+      ]
     }
   ]);
 
@@ -121,7 +142,9 @@ const Settings = () => {
     customPrompt: '',
     personality: '',
     skills: '',
-    avatar: ''
+    avatar: '',
+    codeName: '',
+    promptTemplate: ''
   });
 
   const [editingSpecialist, setEditingSpecialist] = useState(null);
@@ -189,7 +212,10 @@ const Settings = () => {
       niche: newSpecialist.niche,
       customPrompt: newSpecialist.customPrompt,
       personality: newSpecialist.personality,
-      skills: newSpecialist.skills
+      skills: newSpecialist.skills,
+      codeName: newSpecialist.codeName,
+      promptTemplate: newSpecialist.promptTemplate,
+      portfolios: []
     };
     setSpecialists([...specialists, specialist]);
     setNewSpecialist({
@@ -199,10 +225,13 @@ const Settings = () => {
       customPrompt: '',
       personality: '',
       skills: '',
-      avatar: ''
+      avatar: '',
+      codeName: '',
+      promptTemplate: ''
     });
     setShowCreateForm(false);
     console.log('Created specialist with prompt:', newSpecialist.customPrompt);
+    console.log('Prompt template:', newSpecialist.promptTemplate);
   };
 
   const handleEditSpecialist = (specialist) => {
@@ -214,7 +243,9 @@ const Settings = () => {
       customPrompt: specialist.customPrompt,
       personality: specialist.personality,
       skills: specialist.skills,
-      avatar: specialist.avatar || ''
+      avatar: specialist.avatar || '',
+      codeName: specialist.codeName || '',
+      promptTemplate: specialist.promptTemplate || ''
     });
     setShowEditForm(true);
   };
@@ -235,7 +266,9 @@ const Settings = () => {
       customPrompt: '',
       personality: '',
       skills: '',
-      avatar: ''
+      avatar: '',
+      codeName: '',
+      promptTemplate: ''
     });
   };
 

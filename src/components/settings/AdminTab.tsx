@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Users, DollarSign, MessageSquare, TrendingUp, Ban, UserCheck, Mail, Megaphone, FileText, Activity, Eye, Calendar, AlertTriangle, Plus, Edit, Trash2, UserMinus } from 'lucide-react';
+import { Users, DollarSign, MessageSquare, TrendingUp, Ban, UserCheck, Mail, Megaphone, FileText, Activity, Eye, Calendar, AlertTriangle, Plus, Edit, Trash2, UserMinus, Portfolio, Code, FileCode } from 'lucide-react';
 
 interface AdminStats {
   totalUsers: number;
@@ -40,6 +39,15 @@ interface Specialist {
   customPrompt: string;
   personality: string;
   skills: string;
+  codeName?: string;
+  promptTemplate?: string;
+  portfolios?: Array<{
+    id: number;
+    title: string;
+    description: string;
+    url?: string;
+    type: 'project' | 'sample' | 'testimonial';
+  }>;
 }
 
 interface AdminTabProps {
@@ -105,6 +113,36 @@ const AdminTab = ({
   onAddFaq,
   onDeleteFaq
 }: AdminTabProps) => {
+  const [portfolioForm, setPortfolioForm] = useState({
+    title: '',
+    description: '',
+    url: '',
+    type: 'project' as 'project' | 'sample' | 'testimonial'
+  });
+  const [showPortfolioForm, setShowPortfolioForm] = useState<number | null>(null);
+
+  const handleAddPortfolio = (specialistId: number) => {
+    const specialist = specialists.find(s => s.id === specialistId);
+    if (specialist) {
+      const newPortfolio = {
+        id: (specialist.portfolios?.length || 0) + 1,
+        ...portfolioForm
+      };
+      
+      const updatedPortfolios = [...(specialist.portfolios || []), newPortfolio];
+      // In a real app, this would update the specialist in the parent component
+      console.log('Adding portfolio to specialist:', specialistId, newPortfolio);
+      
+      setPortfolioForm({ title: '', description: '', url: '', type: 'project' });
+      setShowPortfolioForm(null);
+    }
+  };
+
+  const handleDeletePortfolio = (specialistId: number, portfolioId: number) => {
+    console.log('Deleting portfolio:', portfolioId, 'from specialist:', specialistId);
+    // In a real app, this would update the specialist in the parent component
+  };
+
   return (
     <div className="space-y-6">
       {/* Enhanced Admin Stats */}
@@ -338,6 +376,18 @@ const AdminTab = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Code Name
+                  </label>
+                  <Input
+                    value={newSpecialist.codeName || ''}
+                    onChange={(e) => setNewSpecialist({...newSpecialist, codeName: e.target.value})}
+                    placeholder="e.g., TECH_WRITER_01"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Specialty
                   </label>
                   <Input
@@ -346,8 +396,6 @@ const AdminTab = ({
                     placeholder="e.g., Technical Writing Expert"
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Niche
@@ -358,6 +406,8 @@ const AdminTab = ({
                     placeholder="e.g., Software Documentation"
                   />
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Personality
@@ -368,16 +418,16 @@ const AdminTab = ({
                     placeholder="e.g., Professional and detail-oriented"
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Skills (comma-separated)
-                </label>
-                <Input
-                  value={newSpecialist.skills}
-                  onChange={(e) => setNewSpecialist({...newSpecialist, skills: e.target.value})}
-                  placeholder="e.g., API Documentation, User Guides, Technical Tutorials"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Skills (comma-separated)
+                  </label>
+                  <Input
+                    value={newSpecialist.skills}
+                    onChange={(e) => setNewSpecialist({...newSpecialist, skills: e.target.value})}
+                    placeholder="e.g., API Documentation, User Guides, Technical Tutorials"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -388,6 +438,18 @@ const AdminTab = ({
                   onChange={(e) => setNewSpecialist({...newSpecialist, customPrompt: e.target.value})}
                   placeholder="Enter the system prompt that defines how this AI specialist should behave, respond, and approach tasks..."
                   rows={4}
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Prompt Template (Tone & Writing Style)
+                </label>
+                <Textarea
+                  value={newSpecialist.promptTemplate || ''}
+                  onChange={(e) => setNewSpecialist({...newSpecialist, promptTemplate: e.target.value})}
+                  placeholder="Define the specific tone, writing style, and formatting preferences this AI specialist should follow..."
+                  rows={3}
                   className="w-full"
                 />
               </div>
@@ -421,7 +483,9 @@ const AdminTab = ({
                       customPrompt: '',
                       personality: '',
                       skills: '',
-                      avatar: ''
+                      avatar: '',
+                      codeName: '',
+                      promptTemplate: ''
                     });
                   }}
                 >
@@ -435,6 +499,7 @@ const AdminTab = ({
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Code Name</TableHead>
                 <TableHead>Specialty</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Jobs</TableHead>
@@ -445,41 +510,164 @@ const AdminTab = ({
             </TableHeader>
             <TableBody>
               {specialists.map((specialist) => (
-                <TableRow key={specialist.id}>
-                  <TableCell className="font-medium">{specialist.name}</TableCell>
-                  <TableCell>{specialist.specialty}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      specialist.status === 'Active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {specialist.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>{specialist.jobsCompleted}</TableCell>
-                  <TableCell>{specialist.rating > 0 ? specialist.rating : 'N/A'}</TableCell>
-                  <TableCell>{specialist.created}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => onEditSpecialist(specialist)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => onDeleteSpecialist(specialist.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <>
+                  <TableRow key={specialist.id}>
+                    <TableCell className="font-medium">{specialist.name}</TableCell>
+                    <TableCell>
+                      <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-mono">
+                        {specialist.codeName || 'N/A'}
+                      </span>
+                    </TableCell>
+                    <TableCell>{specialist.specialty}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        specialist.status === 'Active' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {specialist.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>{specialist.jobsCompleted}</TableCell>
+                    <TableCell>{specialist.rating > 0 ? specialist.rating : 'N/A'}</TableCell>
+                    <TableCell>{specialist.created}</TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => setShowPortfolioForm(showPortfolioForm === specialist.id ? null : specialist.id)}
+                          title="Manage Portfolio"
+                        >
+                          <Portfolio className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => onEditSpecialist(specialist)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => onDeleteSpecialist(specialist.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  
+                  {/* Portfolio Management Row */}
+                  {showPortfolioForm === specialist.id && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="bg-gray-50">
+                        <div className="p-4 space-y-4">
+                          <h4 className="font-semibold text-lg">Portfolio Management - {specialist.name}</h4>
+                          
+                          {/* Add Portfolio Form */}
+                          <div className="border rounded-lg p-4 bg-white">
+                            <h5 className="font-medium mb-3">Add New Portfolio Item</h5>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Title
+                                </label>
+                                <Input
+                                  value={portfolioForm.title}
+                                  onChange={(e) => setPortfolioForm({...portfolioForm, title: e.target.value})}
+                                  placeholder="Portfolio item title"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Type
+                                </label>
+                                <select 
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                  value={portfolioForm.type}
+                                  onChange={(e) => setPortfolioForm({...portfolioForm, type: e.target.value as 'project' | 'sample' | 'testimonial'})}
+                                >
+                                  <option value="project">Project</option>
+                                  <option value="sample">Sample Work</option>
+                                  <option value="testimonial">Testimonial</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Description
+                              </label>
+                              <Textarea
+                                value={portfolioForm.description}
+                                onChange={(e) => setPortfolioForm({...portfolioForm, description: e.target.value})}
+                                placeholder="Describe this portfolio item..."
+                                rows={2}
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                URL (optional)
+                              </label>
+                              <Input
+                                value={portfolioForm.url}
+                                onChange={(e) => setPortfolioForm({...portfolioForm, url: e.target.value})}
+                                placeholder="https://example.com/portfolio-item"
+                              />
+                            </div>
+                            <Button 
+                              onClick={() => handleAddPortfolio(specialist.id)}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Add Portfolio Item
+                            </Button>
+                          </div>
+
+                          {/* Existing Portfolio Items */}
+                          {specialist.portfolios && specialist.portfolios.length > 0 && (
+                            <div className="border rounded-lg p-4 bg-white">
+                              <h5 className="font-medium mb-3">Existing Portfolio Items</h5>
+                              <div className="space-y-3">
+                                {specialist.portfolios.map((portfolio) => (
+                                  <div key={portfolio.id} className="flex items-center justify-between p-3 border rounded">
+                                    <div className="flex-1">
+                                      <div className="flex items-center space-x-2">
+                                        <h6 className="font-medium">{portfolio.title}</h6>
+                                        <span className={`px-2 py-1 rounded text-xs ${
+                                          portfolio.type === 'project' ? 'bg-blue-100 text-blue-800' :
+                                          portfolio.type === 'sample' ? 'bg-green-100 text-green-800' :
+                                          'bg-purple-100 text-purple-800'
+                                        }`}>
+                                          {portfolio.type}
+                                        </span>
+                                      </div>
+                                      <p className="text-sm text-gray-600 mt-1">{portfolio.description}</p>
+                                      {portfolio.url && (
+                                        <a href={portfolio.url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                                          View Item →
+                                        </a>
+                                      )}
+                                    </div>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleDeletePortfolio(specialist.id, portfolio.id)}
+                                      className="text-red-600 hover:text-red-700"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
               ))}
             </TableBody>
           </Table>
