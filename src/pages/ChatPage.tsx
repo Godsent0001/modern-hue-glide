@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Send, ArrowLeft, Star, Clock, Upload, Coins, X } from 'lucide-react';
@@ -18,6 +17,7 @@ const ChatPage = () => {
   const [availableTokens] = useState(250000);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const freelancer = location.state?.freelancer || {
     id: parseInt(id || '1'),
@@ -28,6 +28,14 @@ const ChatPage = () => {
     responseTime: '< 1 hour',
     description: 'Professional AI specialist ready to help with your project.'
   };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     const statuses = ['active', 'pending', 'delivered'];
@@ -187,8 +195,8 @@ const ChatPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-1 text-xs sm:text-sm bg-blue-100 text-blue-800 px-2 sm:px-3 py-1 rounded-full flex-shrink-0 self-start sm:self-center">
-                    <Coins className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <div className="flex items-center space-x-1 text-xs sm:text-sm bg-blue-100 text-blue-800 px-2 sm:px-3 py-1 rounded-full flex-shrink-0 self-start sm:self-center whitespace-nowrap">
+                    <Coins className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                     <span>{formatTokens(availableTokens)} tokens</span>
                   </div>
                 </div>
@@ -197,14 +205,14 @@ const ChatPage = () => {
           </div>
 
           {/* Chat Interface */}
-          <Card className="h-[60vh] sm:h-96 flex flex-col">
-            <CardHeader className="pb-4">
+          <Card className="flex flex-col" style={{ height: '70vh', maxHeight: '600px' }}>
+            <CardHeader className="pb-4 flex-shrink-0">
               <h2 className="text-base sm:text-lg font-semibold">Chat with {freelancer.name}</h2>
             </CardHeader>
             
-            <CardContent className="flex-1 flex flex-col p-3 sm:p-6">
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 mb-4">
+            <CardContent className="flex-1 flex flex-col p-3 sm:p-6 min-h-0">
+              {/* Messages - Scrollable */}
+              <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 mb-4 min-h-0">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -230,11 +238,12 @@ const ChatPage = () => {
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* File Upload Preview */}
               {uploadedFiles.length > 0 && (
-                <div className="mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg">
+                <div className="mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg flex-shrink-0">
                   <div className="text-xs sm:text-sm text-gray-600 mb-2">Files to upload:</div>
                   <div className="space-y-2">
                     {uploadedFiles.map((file, index) => (
@@ -258,8 +267,8 @@ const ChatPage = () => {
                 </div>
               )}
 
-              {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="flex space-x-2">
+              {/* Message Input - Fixed */}
+              <form onSubmit={handleSendMessage} className="flex space-x-2 flex-shrink-0">
                 <input
                   type="file"
                   ref={fileInputRef}

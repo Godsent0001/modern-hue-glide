@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Send, X, Upload, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -32,7 +32,16 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
     }
   ]);
   const [newMessage, setNewMessage] = useState('');
-  const [availableTokens] = useState(250000); // Mock available tokens
+  const [availableTokens] = useState(250000);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,9 +96,9 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md h-[90vh] sm:h-96 flex flex-col max-h-screen">
-        {/* Chat Header */}
-        <div className="flex items-center justify-between p-3 sm:p-4 border-b">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col" style={{ height: '85vh', maxHeight: '600px' }}>
+        {/* Chat Header - Fixed */}
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b flex-shrink-0">
           <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
             <img
               src={freelancer.avatar}
@@ -102,19 +111,18 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
             </div>
           </div>
           <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
-            <div className="flex items-center space-x-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-              <Coins className="w-3 h-3" />
-              <span className="hidden sm:inline">{formatTokens(availableTokens)}</span>
-              <span className="sm:hidden">{formatTokens(availableTokens).replace('tokens', '')}</span>
+            <div className="flex items-center space-x-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full whitespace-nowrap">
+              <Coins className="w-3 h-3 flex-shrink-0" />
+              <span>{formatTokens(availableTokens)}</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose} className="p-1 sm:p-2">
+            <Button variant="ghost" size="sm" onClick={onClose} className="p-1 sm:p-2 flex-shrink-0">
               <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
+        {/* Messages - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 min-h-0">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -134,10 +142,11 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Message Input */}
-        <div className="p-3 sm:p-4 border-t">
+        {/* Message Input - Fixed */}
+        <div className="p-3 sm:p-4 border-t flex-shrink-0">
           <form onSubmit={handleSendMessage} className="flex space-x-2">
             <input
               type="file"
