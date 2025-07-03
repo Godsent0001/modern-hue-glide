@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, MessageCircle, History } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Navigation = () => {
@@ -17,7 +17,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link to="/" className="text-2xl font-bold text-blue-600">
-              FreelanceAI
+              AI WORKFORCE
             </Link>
           </div>
 
@@ -41,20 +41,19 @@ const Navigation = () => {
             </Link>
             <Link
               to="/chat-history"
-              className={`font-medium transition-colors hover:text-blue-600 flex items-center ${
+              className={`font-medium transition-colors hover:text-blue-600 ${
                 isActive('/chat-history') ? 'text-blue-600' : 'text-gray-700'
               }`}
             >
-              <History className="w-4 h-4 mr-1" />
               Chat History
             </Link>
             <Link
-              to="/pricing"
+              to="/categories"
               className={`font-medium transition-colors hover:text-blue-600 ${
-                isActive('/pricing') ? 'text-blue-600' : 'text-gray-700'
+                isActive('/categories') ? 'text-blue-600' : 'text-gray-700'
               }`}
             >
-              Pricing
+              Categories
             </Link>
             <Link
               to="/settings"
@@ -111,22 +110,21 @@ const Navigation = () => {
             </Link>
             <Link
               to="/chat-history"
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 flex items-center ${
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
                 isActive('/chat-history') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              <History className="w-4 h-4 mr-2" />
               Chat History
             </Link>
             <Link
-              to="/pricing"
+              to="/categories"
               className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
-                isActive('/pricing') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                isActive('/categories') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Pricing
+              Categories
             </Link>
             <Link
               to="/settings"
