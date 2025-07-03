@@ -27,31 +27,38 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
       price: 0,
       tokens: 10000,
       features: ['10,000 tokens per day', 'Access to all AI models', 'Basic support', 'Community access'],
-      current: true
+      current: true,
+      priceDisplay: 'Free'
     },
     {
       id: 'standard',
       name: 'Standard Plan',
-      price: 0.99,
+      price: 1500,
       tokens: 500000,
       features: ['500,000 tokens', 'Access to all AI models', 'Priority support', 'Custom templates', 'Advanced analytics'],
-      current: false
+      current: false,
+      priceDisplay: '₦1,500',
+      approximateUSD: '≈ $0.99'
     },
     {
       id: 'premium',
       name: 'Premium Plan',
-      price: 1.99,
+      price: 3000,
       tokens: 1000000,
       features: ['1,000,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration', 'White-label solutions'],
-      current: false
+      current: false,
+      priceDisplay: '₦3,000',
+      approximateUSD: '≈ $1.99'
     },
     {
       id: 'gold',
       name: 'Gold Member',
-      price: 15.99,
+      price: 24000,
       tokens: 10000000,
       features: ['10,000,000 tokens', 'Access to all AI models', '24/7 VIP support', 'Priority processing', 'Custom AI training', 'Enterprise features', 'Dedicated account manager'],
-      current: false
+      current: false,
+      priceDisplay: '₦24,000',
+      approximateUSD: '≈ $15.99'
     }
   ];
 
@@ -102,8 +109,13 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
             <CardHeader className="text-center pt-6">
               <CardTitle className={`text-xl ${plan.id === 'gold' ? 'text-yellow-700' : ''}`}>{plan.name}</CardTitle>
               <div className={`text-3xl font-bold ${plan.id === 'gold' ? 'text-yellow-600' : ''}`}>
-                {plan.price === 0 ? 'Free' : `$${plan.price}`}
+                {plan.priceDisplay}
               </div>
+              {plan.approximateUSD && (
+                <div className="text-sm text-gray-500">
+                  {plan.approximateUSD}
+                </div>
+              )}
               <p className="text-gray-600">
                 {plan.id === 'free' ? '10K tokens/day' : formatTokens(plan.tokens) + ' tokens'}
               </p>
