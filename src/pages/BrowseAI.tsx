@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import CreateDiscussionModal from '@/components/CreateDiscussionModal';
 
 const BrowseAI = () => {
   const [searchParams] = useSearchParams();
@@ -20,6 +21,7 @@ const BrowseAI = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [showSubcategories, setShowSubcategories] = useState(false);
+  const [showCreateDiscussion, setShowCreateDiscussion] = useState(false);
 
   const subcategories = location.state?.subcategories || [];
 
@@ -310,6 +312,11 @@ const BrowseAI = () => {
     }, 1000);
   };
 
+  const handleCreateDiscussion = (discussion: { title: string; content: string; category: string }) => {
+    console.log('New discussion created:', discussion);
+    // In a real app, this would be sent to the backend
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -407,8 +414,8 @@ const BrowseAI = () => {
             <>
               {/* Search and Filters */}
               <Card className="mb-8">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-4">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col gap-4">
                     <div className="flex-1 relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input
@@ -419,32 +426,50 @@ const BrowseAI = () => {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Filter className="text-gray-500 w-5 h-5" />
-                      {!showSubcategories && (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                      <Filter className="text-gray-500 w-5 h-5 flex-shrink-0" />
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                        {!showSubcategories && (
+                          <select
+                            value={selectedCategory}
+                            onChange={(e) => {
+                              setSelectedCategory(e.target.value);
+                              if (e.target.value !== 'all') {
+                                // Simulate getting subcategories for the selected category
+                                const categorySubcategories = {
+                                  'Content Writing': ['Blog Posts', 'Website Content', 'Articles', 'SEO Content'],
+                                  'Copywriting': ['Sales Pages', 'Ad Copy', 'Email Marketing Campaigns'],
+                                  'Business Writing': ['Business Proposals', 'Reports', 'Presentations']
+                                };
+                                const subs = categorySubcategories[e.target.value as keyof typeof categorySubcategories] || [];
+                                setShowSubcategories(true);
+                                // Update URL to include subcategories
+                                navigate(`/browse-ai?category=${encodeURIComponent(e.target.value)}`, {
+                                  state: { subcategories: subs }
+                                });
+                              }
+                            }}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                          >
+                            {categories.map(category => (
+                              <option key={category} value={category}>
+                                {category === 'all' ? 'All Categories' : category}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                         <select
-                          value={selectedCategory}
-                          onChange={(e) => setSelectedCategory(e.target.value)}
-                          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          value={selectedRating}
+                          onChange={(e) => setSelectedRating(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         >
-                          {categories.map(category => (
-                            <option key={category} value={category}>
-                              {category === 'all' ? 'All Categories' : category}
+                          {ratingOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
                             </option>
                           ))}
                         </select>
-                      )}
-                      <select
-                        value={selectedRating}
-                        onChange={(e) => setSelectedRating(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        {ratingOptions.map(option => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -456,8 +481,8 @@ const BrowseAI = () => {
                   <Card key={freelancer.id} className="hover:shadow-lg transition-shadow duration-200">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="relative">
+                        <div className="flex items-center space-x-3 flex-1 min-w-0">
+                          <div className="relative flex-shrink-0">
                             <img
                               src={freelancer.avatar}
                               alt={freelancer.name}
@@ -465,13 +490,13 @@ const BrowseAI = () => {
                             />
                             <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${freelancer.online ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                           </div>
-                          <div>
-                            <CardTitle className="text-lg">{freelancer.name}</CardTitle>
-                            <p className="text-sm text-blue-600">{freelancer.specialty}</p>
-                            <p className="text-xs text-gray-500">{freelancer.subSpecialty}</p>
+                          <div className="min-w-0 flex-1">
+                            <CardTitle className="text-lg truncate">{freelancer.name}</CardTitle>
+                            <p className="text-sm text-blue-600 truncate">{freelancer.specialty}</p>
+                            <p className="text-xs text-gray-500 truncate">{freelancer.subSpecialty}</p>
                           </div>
                         </div>
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-gray-600 flex-shrink-0 ml-2">
                           <Star className="w-4 h-4 text-yellow-500 mr-1" />
                           <span>{freelancer.rating}</span>
                         </div>
@@ -532,7 +557,9 @@ const BrowseAI = () => {
                       <h2 className="text-xl font-semibold">Community Discussions</h2>
                       <p className="text-gray-600">Connect with other users and share experiences</p>
                     </div>
-                    <Button>Start Discussion</Button>
+                    <Button onClick={() => setShowCreateDiscussion(true)}>
+                      Start Discussion
+                    </Button>
                   </div>
                   <div className="flex items-center space-x-6 text-sm text-gray-600">
                     <div className="flex items-center">
@@ -594,6 +621,12 @@ const BrowseAI = () => {
           )}
         </div>
       </div>
+
+      <CreateDiscussionModal
+        isOpen={showCreateDiscussion}
+        onClose={() => setShowCreateDiscussion(false)}
+        onSubmit={handleCreateDiscussion}
+      />
 
       <Footer />
     </div>

@@ -13,6 +13,7 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import Settings from "./pages/Settings";
 import ChatPage from "./pages/ChatPage";
+import ChatHistory from "./pages/ChatHistory";
 import LiveChat from "./pages/LiveChat";
 import AISpecialistProfile from "./pages/AISpecialistProfile";
 import PortfolioDetails from "./pages/PortfolioDetails";
@@ -37,6 +38,7 @@ const App: React.FC = () => {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/chat/:id" element={<ChatPage />} />
+            <Route path="/chat-history" element={<ChatHistory />} />
             <Route path="/live-chat" element={<LiveChat />} />
             <Route path="/ai-specialist/:id" element={<AISpecialistProfile />} />
             <Route path="/portfolio/:id" element={<PortfolioDetails />} />

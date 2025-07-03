@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, ExternalLink, Calendar, Tag, User } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Calendar, Tag, User, Download, FileText } from 'lucide-react';
 
 const PortfolioDetails = () => {
   const { id } = useParams();
@@ -37,7 +37,31 @@ const PortfolioDetails = () => {
       "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ],
+    documents: [
+      {
+        name: "API Documentation Guide.pdf",
+        size: "2.4 MB",
+        type: "PDF",
+        downloadUrl: "#"
+      },
+      {
+        name: "Implementation Examples.docx",
+        size: "1.8 MB",
+        type: "DOCX",
+        downloadUrl: "#"
+      }
     ]
+  };
+
+  const handleDownload = (doc: any) => {
+    // In a real app, this would trigger the actual download
+    const element = document.createElement('a');
+    element.href = doc.downloadUrl;
+    element.download = doc.name;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   return (
@@ -142,6 +166,41 @@ const PortfolioDetails = () => {
                 <blockquote className="italic text-gray-700 border-l-4 border-blue-500 pl-4">
                   "{portfolio.clientFeedback}"
                 </blockquote>
+              </CardContent>
+            </Card>
+
+            {/* Downloadable Documents */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <FileText className="w-5 h-5 mr-2" />
+                  Project Documents
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {portfolio.documents.map((doc, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{doc.name}</p>
+                          <p className="text-sm text-gray-500">{doc.type} • {doc.size}</p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleDownload(doc)}
+                        size="sm"
+                        className="flex items-center"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
 

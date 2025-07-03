@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Send, X, Upload, Coins } from 'lucide-react';
+import { Send, X, Upload, Coins, Check, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Message {
@@ -9,6 +9,7 @@ interface Message {
   content: string;
   timestamp: Date;
   file?: string;
+  status?: 'sending' | 'sent' | 'delivered' | 'read';
 }
 
 interface ChatInterfaceProps {
@@ -28,7 +29,8 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
       id: 1,
       sender: 'ai',
       content: `Hi! I'm ${freelancer.name}. I'd love to help you with your ${freelancer.specialty.toLowerCase()} needs. What project are you working on?`,
-      timestamp: new Date()
+      timestamp: new Date(),
+      status: 'read'
     }
   ]);
   const [newMessage, setNewMessage] = useState('');
@@ -43,6 +45,25 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
     scrollToBottom();
   }, [messages]);
 
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getStatusIcon = (status?: string) => {
+    switch (status) {
+      case 'sending':
+        return <div className="w-3 h-3 border border-gray-300 border-t-blue-500 rounded-full animate-spin" />;
+      case 'sent':
+        return <Check className="w-3 h-3 text-gray-400" />;
+      case 'delivered':
+        return <CheckCheck className="w-3 h-3 text-gray-400" />;
+      case 'read':
+        return <CheckCheck className="w-3 h-3 text-blue-500" />;
+      default:
+        return null;
+    }
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -51,22 +72,41 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
       id: messages.length + 1,
       sender: 'user',
       content: newMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
+      status: 'sending'
     };
 
     setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
 
+    // Simulate message status updates
+    setTimeout(() => {
+      setMessages(prev => prev.map(msg => 
+        msg.id === userMessage.id ? { ...msg, status: 'sent' } : msg
+      ));
+    }, 500);
+
+    setTimeout(() => {
+      setMessages(prev => prev.map(msg => 
+        msg.id === userMessage.id ? { ...msg, status: 'delivered' } : msg
+      ));
+    }, 1000);
+
     // Simulate AI response
     setTimeout(() => {
+      setMessages(prev => prev.map(msg => 
+        msg.id === userMessage.id ? { ...msg, status: 'read' } : msg
+      ));
+
       const aiResponse: Message = {
         id: messages.length + 2,
         sender: 'ai',
         content: "That sounds like an interesting project! I have experience with similar work. Let me know more details about your requirements and timeline.",
-        timestamp: new Date()
+        timestamp: new Date(),
+        status: 'read'
       };
       setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+    }, 2000);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +117,8 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
         sender: 'user',
         content: `Uploaded file: ${file.name}`,
         timestamp: new Date(),
-        file: file.name
+        file: file.name,
+        status: 'sent'
       };
       setMessages(prev => [...prev, fileMessage]);
     }
@@ -128,17 +169,25 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
               key={message.id}
               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div
-                className={`max-w-[85%] sm:max-w-xs px-3 py-2 rounded-lg text-sm sm:text-base ${
-                  message.sender === 'user'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-900'
-                }`}
-              >
-                {message.file && (
-                  <div className="text-xs opacity-75 mb-1">📎 {message.file}</div>
-                )}
-                <div className="break-words">{message.content}</div>
+              <div className="flex flex-col max-w-[85%] sm:max-w-xs">
+                <div
+                  className={`px-3 py-2 rounded-lg text-sm sm:text-base ${
+                    message.sender === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-900'
+                  }`}
+                >
+                  {message.file && (
+                    <div className="text-xs opacity-75 mb-1">📎 {message.file}</div>
+                  )}
+                  <div className="break-words">{message.content}</div>
+                </div>
+                <div className={`flex items-center space-x-1 mt-1 text-xs text-gray-500 ${
+                  message.sender === 'user' ? 'justify-end' : 'justify-start'
+                }`}>
+                  <span>{formatTime(message.timestamp)}</span>
+                  {message.sender === 'user' && getStatusIcon(message.status)}
+                </div>
               </div>
             </div>
           ))}
