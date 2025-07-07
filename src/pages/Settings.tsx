@@ -1,16 +1,17 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from '@/components/ui/button';
 import Navigation from '@/components/Navigation';
-import ProfileTab from '@/components/ProfileTab';
-import NotificationsTab from '@/components/NotificationsTab';
-import BillingTab from '@/components/BillingTab';
-import SecurityTab from '@/components/SecurityTab';
-import FaqTab from '@/components/FaqTab';
-import AdminTab from '@/components/AdminTab';
-import SupportTab from '@/components/SupportTab';
+import ProfileTab from '@/components/settings/ProfileTab';
+import NotificationsTab from '@/components/settings/NotificationsTab';
+import BillingTab from '@/components/settings/BillingTab';
+import SecurityTab from '@/components/settings/SecurityTab';
+import FaqTab from '@/components/settings/FaqTab';
+import AdminTab from '@/components/settings/AdminTab';
+import SupportTab from '@/components/settings/SupportTab';
 
 interface FAQ {
   id: number;
