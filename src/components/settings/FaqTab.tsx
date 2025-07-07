@@ -2,7 +2,9 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { ChevronDown, ChevronUp, Search, Plus, Trash2 } from 'lucide-react';
 
 interface FaqItem {
   id: number;
@@ -13,13 +15,13 @@ interface FaqItem {
 
 interface FaqTabProps {
   faqItems: FaqItem[];
-  newFaq: { question: string; answer: string; category: string };
-  setNewFaq: (faq: { question: string; answer: string; category: string }) => void;
+  newFaq: Omit<FaqItem, 'id'>;
+  setNewFaq: (faq: Omit<FaqItem, 'id'>) => void;
   onAddFaq: () => void;
   onDeleteFaq: (id: number) => void;
 }
 
-const FaqTab = ({ faqItems }: FaqTabProps) => {
+const FaqTab = ({ faqItems, newFaq, setNewFaq, onAddFaq, onDeleteFaq }: FaqTabProps) => {
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -34,6 +36,10 @@ const FaqTab = ({ faqItems }: FaqTabProps) => {
     item.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleNewFaqChange = (field: keyof Omit<FaqItem, 'id'>, value: string) => {
+    setNewFaq({ ...newFaq, [field]: value });
+  };
 
   return (
     <div className="space-y-6">
@@ -66,10 +72,23 @@ const FaqTab = ({ faqItems }: FaqTabProps) => {
                         {item.category}
                       </span>
                     </div>
-                    {expandedItems.includes(item.id) ? 
-                      <ChevronUp className="w-5 h-5" /> : 
-                      <ChevronDown className="w-5 h-5" />
-                    }
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteFaq(item.id);
+                        }}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                      {expandedItems.includes(item.id) ? 
+                        <ChevronUp className="w-5 h-5" /> : 
+                        <ChevronDown className="w-5 h-5" />
+                      }
+                    </div>
                   </button>
                   {expandedItems.includes(item.id) && (
                     <div className="mt-3 pt-3 border-t text-gray-600">
@@ -86,6 +105,47 @@ const FaqTab = ({ faqItems }: FaqTabProps) => {
               No FAQs found matching your search.
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Add New FAQ</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Category</label>
+            <Input
+              placeholder="Enter category"
+              value={newFaq.category}
+              onChange={(e) => handleNewFaqChange('category', e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Question</label>
+            <Input
+              placeholder="Enter question"
+              value={newFaq.question}
+              onChange={(e) => handleNewFaqChange('question', e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Answer</label>
+            <Textarea
+              placeholder="Enter answer"
+              value={newFaq.answer}
+              onChange={(e) => handleNewFaqChange('answer', e.target.value)}
+              rows={3}
+            />
+          </div>
+          <Button 
+            onClick={onAddFaq}
+            disabled={!newFaq.question || !newFaq.answer || !newFaq.category}
+            className="w-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add FAQ
+          </Button>
         </CardContent>
       </Card>
     </div>
