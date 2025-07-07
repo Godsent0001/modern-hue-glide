@@ -93,7 +93,33 @@
 
   body {
     @apply bg-background text-foreground;
+    font-size: 13px; /* Base font size reduced from default 16px */
   }
+
+  /* Override default text sizes to be smaller */
+  h1 { @apply text-lg font-bold; }
+  h2 { @apply text-base font-semibold; }
+  h3 { @apply text-sm font-medium; }
+  h4 { @apply text-sm font-medium; }
+  h5 { @apply text-xs font-medium; }
+  h6 { @apply text-xs font-medium; }
+  
+  p { @apply text-xs; }
+  span { @apply text-xs; }
+  div { @apply text-xs; }
+  
+  /* Form elements */
+  input { @apply text-xs; }
+  textarea { @apply text-xs; }
+  select { @apply text-xs; }
+  label { @apply text-xs; }
+  
+  /* Button text */
+  button { @apply text-xs; }
+  
+  /* Navigation text */
+  nav { @apply text-xs; }
+  nav a { @apply text-xs; }
 }
 
 /* Enhanced animations and effects */

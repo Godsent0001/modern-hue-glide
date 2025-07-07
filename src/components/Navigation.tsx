@@ -14,19 +14,19 @@ const Navigation = () => {
   return (
     <nav className="bg-white shadow-lg fixed w-full top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-12">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2 text-2xl font-bold text-blue-600">
-              <Bot className="w-8 h-8" />
-              <span>AI WORKFORCE</span>
+            <Link to="/" className="flex items-center space-x-2 text-lg font-bold text-blue-600">
+              <Bot className="w-6 h-6" />
+              <span className="text-sm">AI WORKFORCE</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             <Link
               to="/"
-              className={`font-medium transition-colors hover:text-blue-600 ${
+              className={`text-xs font-medium transition-colors hover:text-blue-600 ${
                 isActive('/') ? 'text-blue-600' : 'text-gray-700'
               }`}
             >
@@ -34,7 +34,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/browse-ai"
-              className={`font-medium transition-colors hover:text-blue-600 ${
+              className={`text-xs font-medium transition-colors hover:text-blue-600 ${
                 isActive('/browse-ai') ? 'text-blue-600' : 'text-gray-700'
               }`}
             >
@@ -42,7 +42,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/chat-history"
-              className={`font-medium transition-colors hover:text-blue-600 ${
+              className={`text-xs font-medium transition-colors hover:text-blue-600 ${
                 isActive('/chat-history') ? 'text-blue-600' : 'text-gray-700'
               }`}
             >
@@ -50,7 +50,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/categories"
-              className={`font-medium transition-colors hover:text-blue-600 ${
+              className={`text-xs font-medium transition-colors hover:text-blue-600 ${
                 isActive('/categories') ? 'text-blue-600' : 'text-gray-700'
               }`}
             >
@@ -58,7 +58,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/settings"
-              className={`font-medium transition-colors hover:text-blue-600 ${
+              className={`text-xs font-medium transition-colors hover:text-blue-600 ${
                 isActive('/settings') ? 'text-blue-600' : 'text-gray-700'
               }`}
             >
@@ -66,11 +66,11 @@ const Navigation = () => {
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" onClick={() => navigate("/signin")}>
+          <div className="hidden md:flex items-center space-x-3">
+            <Button variant="outline" size="sm" className="text-xs h-7 px-3" onClick={() => navigate("/signin")}>
               Sign In
             </Button>
-            <Button onClick={() => navigate("/signup")}>
+            <Button size="sm" className="text-xs h-7 px-3" onClick={() => navigate("/signup")}>
               Get Started
             </Button>
           </div>
@@ -81,7 +81,7 @@ const Navigation = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-gray-700 hover:text-blue-600 focus:outline-none"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -93,7 +93,7 @@ const Navigation = () => {
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
               to="/"
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
+              className={`block px-3 py-2 rounded-md text-xs font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
                 isActive('/') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
               }`}
               onClick={() => setIsMenuOpen(false)}
@@ -102,7 +102,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/browse-ai"
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
+              className={`block px-3 py-2 rounded-md text-xs font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
                 isActive('/browse-ai') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
               }`}
               onClick={() => setIsMenuOpen(false)}
@@ -111,7 +111,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/chat-history"
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
+              className={`block px-3 py-2 rounded-md text-xs font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
                 isActive('/chat-history') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
               }`}
               onClick={() => setIsMenuOpen(false)}
@@ -120,7 +120,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/categories"
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
+              className={`block px-3 py-2 rounded-md text-xs font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
                 isActive('/categories') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
               }`}
               onClick={() => setIsMenuOpen(false)}
@@ -129,18 +129,19 @@ const Navigation = () => {
             </Link>
             <Link
               to="/settings"
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
+              className={`block px-3 py-2 rounded-md text-xs font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
                 isActive('/settings') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Settings
             </Link>
-            <div className="pt-4 pb-3 border-t border-gray-200">
-              <div className="flex items-center px-3 space-x-3">
+            <div className="pt-3 pb-2 border-t border-gray-200">
+              <div className="flex items-center px-3 space-x-2">
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  size="sm"
+                  className="flex-1 text-xs h-7"
                   onClick={() => {
                     navigate("/signin");
                     setIsMenuOpen(false);
@@ -149,7 +150,8 @@ const Navigation = () => {
                   Sign In
                 </Button>
                 <Button
-                  className="flex-1"
+                  size="sm"
+                  className="flex-1 text-xs h-7"
                   onClick={() => {
                     navigate("/signup");
                     setIsMenuOpen(false);

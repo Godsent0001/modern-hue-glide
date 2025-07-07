@@ -207,23 +207,23 @@ const Settings = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="pt-20 pb-8">
+      <div className="pt-16 pb-6">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-            <p className="text-gray-600 mt-2">Manage your account preferences and platform settings</p>
+          <div className="mb-6">
+            <h1 className="text-xl font-bold text-gray-900">Settings</h1>
+            <p className="text-gray-600 mt-1 text-xs">Manage your account preferences and platform settings</p>
           </div>
 
-          <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-              <TabsTrigger value="billing">Billing</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
-              <TabsTrigger value="faq">FAQ</TabsTrigger>
-              <TabsTrigger value="admin">Admin</TabsTrigger>
-              <TabsTrigger value="support">Support</TabsTrigger>
-              <TabsTrigger value="chat">Live Chat</TabsTrigger>
+          <Tabs defaultValue="profile" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-8">
+              <TabsTrigger value="profile" className="text-xs px-2">Profile</TabsTrigger>
+              <TabsTrigger value="notifications" className="text-xs px-2">Notifications</TabsTrigger>
+              <TabsTrigger value="billing" className="text-xs px-2">Billing</TabsTrigger>
+              <TabsTrigger value="security" className="text-xs px-2">Security</TabsTrigger>
+              <TabsTrigger value="faq" className="text-xs px-2">FAQ</TabsTrigger>
+              <TabsTrigger value="admin" className="text-xs px-2">Admin</TabsTrigger>
+              <TabsTrigger value="support" className="text-xs px-2">Support</TabsTrigger>
+              <TabsTrigger value="chat" className="text-xs px-2">Live Chat</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile">
@@ -303,12 +303,12 @@ const Settings = () => {
 
             <TabsContent value="chat">
               <Card>
-                <CardHeader>
-                  <CardTitle>Live Support Chat</CardTitle>
-                  <p className="text-gray-600">Get instant help from our support team</p>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Live Support Chat</CardTitle>
+                  <p className="text-gray-600 text-xs">Get instant help from our support team</p>
                 </CardHeader>
                 <CardContent>
-                  <Button onClick={() => navigate('/live-chat')} className="w-full">
+                  <Button onClick={() => navigate('/live-chat')} className="w-full text-xs h-7">
                     Start Live Chat
                   </Button>
                 </CardContent>
