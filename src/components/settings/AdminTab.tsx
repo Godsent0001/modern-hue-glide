@@ -10,6 +10,13 @@ import AuditLogSection from './admin/AuditLogSection';
 import SystemSettingsSection from './admin/SystemSettingsSection';
 import { AdminStats, User, Admin, Category, Specialist, EmailCampaign, Announcement, FAQ, AuditLog } from './admin/types';
 
+interface FaqItem {
+  id: number;
+  question: string;
+  answer: string;
+  category: string;
+}
+
 interface AdminTabProps {
   adminStats: AdminStats;
   users: User[];
@@ -35,9 +42,9 @@ interface AdminTabProps {
   announcement: Announcement;
   setAnnouncement: (announcement: Announcement) => void;
   onCreateAnnouncement: () => void;
-  faqItems: FAQ[];
-  newFaq: FAQ;
-  setNewFaq: (faq: FAQ) => void;
+  faqItems: FaqItem[];
+  newFaq: Omit<FaqItem, 'id'>;
+  setNewFaq: (faq: Omit<FaqItem, 'id'>) => void;
   onAddFaq: () => void;
   onDeleteFaq: (id: number) => void;
 }
