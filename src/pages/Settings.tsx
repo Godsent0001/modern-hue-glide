@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +10,7 @@ import BillingTab from '@/components/settings/BillingTab';
 import AdminTab from '@/components/settings/AdminTab';
 import SupportTab from '@/components/settings/SupportTab';
 import FaqTab from '@/components/settings/FaqTab';
+import { FAQ } from '@/components/settings/admin/types';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -317,9 +319,9 @@ const Settings = () => {
 
   const handleAddFaq = () => {
     const id = faqItems.length + 1;
-    const faqWithId: FAQ = { ...newFaq, id };
+    const faqWithId: FAQ = { id, ...newFaq };
     setFaqItems([...faqItems, faqWithId]);
-    setNewFaq({ id: 0, question: '', answer: '', category: '' });
+    setNewFaq({ question: '', answer: '', category: '' });
   };
 
   const handleDeleteFaq = (id: number) => {
