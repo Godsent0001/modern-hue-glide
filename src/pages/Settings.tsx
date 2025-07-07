@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -168,8 +167,7 @@ const Settings = () => {
     title: '',
     content: '',
     type: 'info',
-    active: false,
-    endDate: ''
+    active: false
   });
 
   const [faqItems, setFaqItems] = useState([
@@ -314,7 +312,7 @@ const Settings = () => {
   const handleCreateAnnouncement = () => {
     console.log('Creating announcement:', announcement);
     alert('Announcement created successfully!');
-    setAnnouncement({ title: '', content: '', type: 'info', active: false, endDate: '' });
+    setAnnouncement({ title: '', content: '', type: 'info', active: false });
   };
 
   const handleAddFaq = () => {
