@@ -93,8 +93,8 @@ const AdminTab = ({
     }
   ]);
 
-  // Announcement with end date
-  const [announcementWithEndDate, setAnnouncementWithEndDate] = useState({
+  // Announcement with end date - fix the type by making endDate required
+  const [announcementWithEndDate, setAnnouncementWithEndDate] = useState<Announcement & { endDate: string }>({
     ...announcement,
     endDate: ''
   });
@@ -140,6 +140,14 @@ const AdminTab = ({
     console.log(`Uploaded ${type}:`, fakeUrl);
   };
 
+  // Fix the announcement handler to properly handle the endDate
+  const handleAnnouncementChange = (updatedAnnouncement: Announcement & { endDate?: string }) => {
+    setAnnouncementWithEndDate({
+      ...updatedAnnouncement,
+      endDate: updatedAnnouncement.endDate || ''
+    });
+  };
+
   return (
     <div className="space-y-6">
       <AdminStatsSection adminStats={adminStats} />
@@ -183,7 +191,7 @@ const AdminTab = ({
         emailCampaign={emailCampaign}
         announcement={announcementWithEndDate}
         onEmailCampaignChange={setEmailCampaign}
-        onAnnouncementChange={setAnnouncementWithEndDate}
+        onAnnouncementChange={handleAnnouncementChange}
         onSendEmailCampaign={onSendEmailCampaign}
         onCreateAnnouncement={onCreateAnnouncement}
       />

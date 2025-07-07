@@ -317,8 +317,9 @@ const Settings = () => {
 
   const handleAddFaq = () => {
     const id = faqItems.length + 1;
-    setFaqItems([...faqItems, { ...newFaq, id }]);
-    setNewFaq({ question: '', answer: '', category: '' });
+    const faqWithId: FAQ = { ...newFaq, id };
+    setFaqItems([...faqItems, faqWithId]);
+    setNewFaq({ id: 0, question: '', answer: '', category: '' });
   };
 
   const handleDeleteFaq = (id: number) => {
