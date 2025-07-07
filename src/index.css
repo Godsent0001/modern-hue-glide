@@ -94,6 +94,60 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Global font size reductions for desktop users */
+  @media (min-width: 768px) {
+    html {
+      font-size: 13px; /* Reduced from default 16px */
+    }
+    
+    h1 {
+      @apply text-xl; /* Reduced from default larger sizes */
+    }
+    
+    h2 {
+      @apply text-lg;
+    }
+    
+    h3 {
+      @apply text-base;
+    }
+    
+    h4 {
+      @apply text-sm;
+    }
+    
+    h5, h6 {
+      @apply text-xs;
+    }
+    
+    p, span, div, label {
+      @apply text-sm; /* Default paragraph text smaller */
+    }
+    
+    button {
+      @apply text-xs; /* Smaller button text */
+    }
+    
+    input, textarea, select {
+      @apply text-xs; /* Smaller form input text */
+    }
+    
+    /* Navigation specific reductions */
+    nav {
+      @apply text-xs;
+    }
+    
+    /* Card content reductions */
+    .card p, .card span, .card div {
+      @apply text-xs;
+    }
+    
+    /* Settings page specific */
+    .settings-content {
+      @apply text-xs;
+    }
+  }
 }
 
 /* Enhanced animations and effects */
