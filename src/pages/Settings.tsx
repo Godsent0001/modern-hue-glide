@@ -1,5 +1,3 @@
-
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -14,7 +12,7 @@ import FaqTab from '@/components/settings/FaqTab';
 import AdminTab from '@/components/settings/AdminTab';
 import SupportTab from '@/components/settings/SupportTab';
 
-interface FAQ {
+interface FaqItem {
   id: number;
   question: string;
   answer: string;
@@ -44,7 +42,7 @@ const Settings = () => {
   const [availableTokens] = useState(250000);
 
   // FAQ state
-  const [faqItems, setFaqItems] = useState<FAQ[]>([
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([
     {
       id: 1,
       question: "How do I reset my password?",
@@ -163,11 +161,11 @@ const Settings = () => {
     setFaqItems(faqItems.filter(item => item.id !== id));
   };
 
-  const [newFaq, setNewFaq] = useState<Omit<FAQ, 'id'>>({ question: '', answer: '', category: '' });
+  const [newFaq, setNewFaq] = useState<Omit<FaqItem, 'id'>>({ question: '', answer: '', category: '' });
 
   const handleAddFaq = () => {
     const id = faqItems.length + 1;
-    const faqWithId: FAQ = { id, ...newFaq };
+    const faqWithId: FaqItem = { id, ...newFaq };
     setFaqItems([...faqItems, faqWithId]);
     setNewFaq({ question: '', answer: '', category: '' });
   };
@@ -324,4 +322,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
