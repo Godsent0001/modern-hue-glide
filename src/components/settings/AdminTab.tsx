@@ -10,13 +10,6 @@ import AuditLogSection from './admin/AuditLogSection';
 import SystemSettingsSection from './admin/SystemSettingsSection';
 import { AdminStats, User, Admin, Category, Specialist, EmailCampaign, Announcement, FAQ, AuditLog } from './admin/types';
 
-interface FaqItem {
-  id: number;
-  question: string;
-  answer: string;
-  category: string;
-}
-
 interface AdminTabProps {
   adminStats: AdminStats;
   users: User[];
@@ -42,9 +35,9 @@ interface AdminTabProps {
   announcement: Announcement;
   setAnnouncement: (announcement: Announcement) => void;
   onCreateAnnouncement: () => void;
-  faqItems: FaqItem[];
-  newFaq: Omit<FaqItem, 'id'>;
-  setNewFaq: (faq: Omit<FaqItem, 'id'>) => void;
+  faqItems: FAQ[];
+  newFaq: FAQ;
+  setNewFaq: (faq: FAQ) => void;
   onAddFaq: () => void;
   onDeleteFaq: (id: number) => void;
 }
@@ -100,8 +93,8 @@ const AdminTab = ({
     }
   ]);
 
-  // Announcement with end date - fix the type by making endDate required
-  const [announcementWithEndDate, setAnnouncementWithEndDate] = useState<Announcement & { endDate: string }>({
+  // Announcement with end date
+  const [announcementWithEndDate, setAnnouncementWithEndDate] = useState({
     ...announcement,
     endDate: ''
   });
@@ -147,14 +140,6 @@ const AdminTab = ({
     console.log(`Uploaded ${type}:`, fakeUrl);
   };
 
-  // Fix the announcement handler to properly handle the endDate
-  const handleAnnouncementChange = (updatedAnnouncement: Announcement & { endDate?: string }) => {
-    setAnnouncementWithEndDate({
-      ...updatedAnnouncement,
-      endDate: updatedAnnouncement.endDate || ''
-    });
-  };
-
   return (
     <div className="space-y-6">
       <AdminStatsSection adminStats={adminStats} />
@@ -198,7 +183,7 @@ const AdminTab = ({
         emailCampaign={emailCampaign}
         announcement={announcementWithEndDate}
         onEmailCampaignChange={setEmailCampaign}
-        onAnnouncementChange={handleAnnouncementChange}
+        onAnnouncementChange={setAnnouncementWithEndDate}
         onSendEmailCampaign={onSendEmailCampaign}
         onCreateAnnouncement={onCreateAnnouncement}
       />

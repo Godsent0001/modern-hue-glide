@@ -49,20 +49,6 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const formatDate = (date: Date) => {
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    if (date.toDateString() === today.toDateString()) {
-      return 'Today';
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    } else {
-      return date.toLocaleDateString();
-    }
-  };
-
   const getStatusIcon = (status?: string) => {
     switch (status) {
       case 'sending':
@@ -178,44 +164,33 @@ const ChatInterface = ({ freelancer, isOpen, onClose }: ChatInterfaceProps) => {
 
         {/* Messages - Scrollable */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 min-h-0">
-          {messages.map((message, index) => {
-            const showDateSeparator = index === 0 || 
-              formatDate(message.timestamp) !== formatDate(messages[index - 1].timestamp);
-            
-            return (
-              <div key={message.id}>
-                {showDateSeparator && (
-                  <div className="flex justify-center my-4">
-                    <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
-                      {formatDate(message.timestamp)}
-                    </span>
-                  </div>
-                )}
-                <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className="flex flex-col max-w-[85%] sm:max-w-xs">
-                    <div
-                      className={`px-3 py-2 rounded-lg text-sm sm:text-base ${
-                        message.sender === 'user'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      {message.file && (
-                        <div className="text-xs opacity-75 mb-1">📎 {message.file}</div>
-                      )}
-                      <div className="break-words">{message.content}</div>
-                    </div>
-                    <div className={`flex items-center space-x-1 mt-1 text-xs text-gray-500 ${
-                      message.sender === 'user' ? 'justify-end' : 'justify-start'
-                    }`}>
-                      <span>{formatTime(message.timestamp)}</span>
-                      {message.sender === 'user' && getStatusIcon(message.status)}
-                    </div>
-                  </div>
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className="flex flex-col max-w-[85%] sm:max-w-xs">
+                <div
+                  className={`px-3 py-2 rounded-lg text-sm sm:text-base ${
+                    message.sender === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-900'
+                  }`}
+                >
+                  {message.file && (
+                    <div className="text-xs opacity-75 mb-1">📎 {message.file}</div>
+                  )}
+                  <div className="break-words">{message.content}</div>
+                </div>
+                <div className={`flex items-center space-x-1 mt-1 text-xs text-gray-500 ${
+                  message.sender === 'user' ? 'justify-end' : 'justify-start'
+                }`}>
+                  <span>{formatTime(message.timestamp)}</span>
+                  {message.sender === 'user' && getStatusIcon(message.status)}
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
           <div ref={messagesEndRef} />
         </div>
 
