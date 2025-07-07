@@ -1,14 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from '@/components/ui/button';
 import Navigation from '@/components/Navigation';
 import ProfileTab from '@/components/settings/ProfileTab';
-import NotificationsTab from '@/components/settings/NotificationsTab';
 import BillingTab from '@/components/settings/BillingTab';
-import SecurityTab from '@/components/settings/SecurityTab';
-import FaqTab from '@/components/settings/FaqTab';
+import ReadOnlyFaqTab from '@/components/settings/ReadOnlyFaqTab';
 import AdminTab from '@/components/settings/AdminTab';
 import SupportTab from '@/components/settings/SupportTab';
 
@@ -20,8 +15,6 @@ interface FaqItem {
 }
 
 const Settings = () => {
-  const navigate = useNavigate();
-  
   // Profile state
   const [profile, setProfile] = useState({
     firstName: 'John',
@@ -29,13 +22,6 @@ const Settings = () => {
     email: 'john@example.com',
     phone: '+1 234 567 8900',
     bio: 'AI enthusiast and developer'
-  });
-
-  // Notifications state
-  const [notifications, setNotifications] = useState({
-    emailUpdates: true,
-    pushNotifications: false,
-    marketingEmails: true
   });
 
   // Billing state
@@ -140,10 +126,6 @@ const Settings = () => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleNotificationChange = (field: string, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [field]: value }));
-  };
-
   const handlePayNow = (planId: string) => {
     console.log('Pay now for plan:', planId);
   };
@@ -157,18 +139,6 @@ const Settings = () => {
     return tokens.toString();
   };
 
-  const handleDeleteFaq = (id: number) => {
-    setFaqItems(faqItems.filter(item => item.id !== id));
-  };
-
-  const [newFaq, setNewFaq] = useState<Omit<FaqItem, 'id'>>({ question: '', answer: '', category: '' });
-
-  const handleAddFaq = () => {
-    const id = faqItems.length + 1;
-    const faqWithId: FaqItem = { id, ...newFaq };
-    setFaqItems([...faqItems, faqWithId]);
-    setNewFaq({ question: '', answer: '', category: '' });
-  };
 
   // Admin handler functions (simplified for now)
   const handleUserAction = (userId: number, action: string) => {
@@ -215,28 +185,18 @@ const Settings = () => {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="billing">Billing</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
               <TabsTrigger value="faq">FAQ</TabsTrigger>
-              <TabsTrigger value="admin">Admin</TabsTrigger>
               <TabsTrigger value="support">Support</TabsTrigger>
-              <TabsTrigger value="chat">Live Chat</TabsTrigger>
+              <TabsTrigger value="admin">Admin</TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile">
               <ProfileTab 
                 profile={profile}
                 onProfileChange={handleProfileChange}
-              />
-            </TabsContent>
-
-            <TabsContent value="notifications">
-              <NotificationsTab 
-                notifications={notifications}
-                onNotificationChange={handleNotificationChange}
               />
             </TabsContent>
 
@@ -249,17 +209,9 @@ const Settings = () => {
               />
             </TabsContent>
 
-            <TabsContent value="security">
-              <SecurityTab />
-            </TabsContent>
-
             <TabsContent value="faq">
-              <FaqTab 
+              <ReadOnlyFaqTab 
                 faqItems={faqItems}
-                onDeleteFaq={handleDeleteFaq}
-                newFaq={newFaq}
-                setNewFaq={setNewFaq}
-                onAddFaq={handleAddFaq}
               />
             </TabsContent>
 
@@ -290,29 +242,15 @@ const Settings = () => {
                 setAnnouncement={setAnnouncement}
                 onCreateAnnouncement={handleCreateAnnouncement}
                 faqItems={faqItems}
-                newFaq={newFaq}
-                setNewFaq={setNewFaq}
-                onAddFaq={handleAddFaq}
-                onDeleteFaq={handleDeleteFaq}
+                newFaq={{question: '', answer: '', category: ''}}
+                setNewFaq={() => {}}
+                onAddFaq={() => {}}
+                onDeleteFaq={() => {}}
               />
             </TabsContent>
 
             <TabsContent value="support">
               <SupportTab />
-            </TabsContent>
-
-            <TabsContent value="chat">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Live Support Chat</CardTitle>
-                  <p className="text-gray-600">Get instant help from our support team</p>
-                </CardHeader>
-                <CardContent>
-                  <Button onClick={() => navigate('/live-chat')} className="w-full">
-                    Start Live Chat
-                  </Button>
-                </CardContent>
-              </Card>
             </TabsContent>
           </Tabs>
         </div>
