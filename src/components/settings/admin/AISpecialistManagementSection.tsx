@@ -53,7 +53,8 @@ const AISpecialistManagementSection = ({
       skills: '',
       avatar: '',
       codeName: '',
-      promptTemplate: ''
+      promptTemplate: '',
+      portfolios: []
     });
   };
 
@@ -173,6 +174,104 @@ const AISpecialistManagementSection = ({
                     Upload Avatar
                   </Button>
                 </label>
+              </div>
+              {newSpecialist.avatar && (
+                <div className="mt-2">
+                  <img 
+                    src={newSpecialist.avatar} 
+                    alt="Avatar preview" 
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Portfolio Items</label>
+              <div className="space-y-3">
+                {(newSpecialist.portfolios || []).map((portfolio, index) => (
+                  <div key={index} className="p-3 bg-gray-100 rounded border space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        value={portfolio.title}
+                        onChange={(e) => {
+                          const updatedPortfolios = [...(newSpecialist.portfolios || [])];
+                          updatedPortfolios[index] = { ...portfolio, title: e.target.value };
+                          onSetNewSpecialist({...newSpecialist, portfolios: updatedPortfolios});
+                        }}
+                        placeholder="Portfolio title"
+                      />
+                      <select
+                        value={portfolio.type}
+                        onChange={(e) => {
+                          const updatedPortfolios = [...(newSpecialist.portfolios || [])];
+                          updatedPortfolios[index] = { ...portfolio, type: e.target.value as 'project' | 'sample' | 'testimonial' };
+                          onSetNewSpecialist({...newSpecialist, portfolios: updatedPortfolios});
+                        }}
+                        className="px-3 py-2 border border-gray-300 rounded-md"
+                      >
+                        <option value="project">Project</option>
+                        <option value="sample">Sample</option>
+                        <option value="testimonial">Testimonial</option>
+                      </select>
+                    </div>
+                    <Textarea
+                      value={portfolio.description}
+                      onChange={(e) => {
+                        const updatedPortfolios = [...(newSpecialist.portfolios || [])];
+                        updatedPortfolios[index] = { ...portfolio, description: e.target.value };
+                        onSetNewSpecialist({...newSpecialist, portfolios: updatedPortfolios});
+                      }}
+                      placeholder="Portfolio description"
+                      rows={2}
+                    />
+                    <div className="flex justify-between items-center">
+                      <Input
+                        value={portfolio.url || ''}
+                        onChange={(e) => {
+                          const updatedPortfolios = [...(newSpecialist.portfolios || [])];
+                          updatedPortfolios[index] = { ...portfolio, url: e.target.value };
+                          onSetNewSpecialist({...newSpecialist, portfolios: updatedPortfolios});
+                        }}
+                        placeholder="Portfolio URL (optional)"
+                        className="flex-1 mr-2"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const updatedPortfolios = (newSpecialist.portfolios || []).filter((_, i) => i !== index);
+                          onSetNewSpecialist({...newSpecialist, portfolios: updatedPortfolios});
+                        }}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const newPortfolio = {
+                      id: Date.now(),
+                      title: '',
+                      description: '',
+                      type: 'project' as const,
+                      url: ''
+                    };
+                    onSetNewSpecialist({
+                      ...newSpecialist, 
+                      portfolios: [...(newSpecialist.portfolios || []), newPortfolio]
+                    });
+                  }}
+                  className="w-full"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Portfolio Item
+                </Button>
               </div>
             </div>
             <div className="flex space-x-4">

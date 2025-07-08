@@ -82,7 +82,7 @@ const Settings = () => {
     }
   ]);
 
-  const [specialists] = useState([
+  const [specialists, setSpecialists] = useState([
     {
       id: 1,
       name: "Tech Guru AI",
@@ -94,9 +94,31 @@ const Settings = () => {
       niche: "Full-stack development",
       customPrompt: "I specialize in modern web technologies",
       personality: "Professional and helpful",
-      skills: "React, Node.js, TypeScript"
+      skills: "React, Node.js, TypeScript",
+      codeName: "TECH_GURU_01",
+      promptTemplate: "Use a professional and technical tone",
+      avatar: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=100&h=100&fit=crop&crop=face",
+      portfolios: []
     }
   ]);
+
+  // AI Specialist Management State
+  const [newSpecialist, setNewSpecialist] = useState({
+    name: '',
+    specialty: '',
+    niche: '',
+    customPrompt: '',
+    personality: '',
+    skills: '',
+    avatar: '',
+    codeName: '',
+    promptTemplate: '',
+    portfolios: []
+  });
+  
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingSpecialist, setEditingSpecialist] = useState(null);
 
   const [auditLogs] = useState([
     {
@@ -150,19 +172,95 @@ const Settings = () => {
   };
 
   const handleCreateSpecialist = () => {
-    console.log('Create specialist');
+    if (!newSpecialist.name || !newSpecialist.specialty) {
+      alert('Please fill in required fields (Name and Specialty)');
+      return;
+    }
+    
+    const id = specialists.length + 1;
+    const specialist = {
+      id,
+      ...newSpecialist,
+      status: "Active",
+      jobsCompleted: 0,
+      rating: 0,
+      created: new Date().toISOString().split('T')[0],
+      portfolios: newSpecialist.portfolios || []
+    };
+    
+    setSpecialists([...specialists, specialist]);
+    setNewSpecialist({
+      name: '',
+      specialty: '',
+      niche: '',
+      customPrompt: '',
+      personality: '',
+      skills: '',
+      avatar: '',
+      codeName: '',
+      promptTemplate: '',
+      portfolios: []
+    });
+    setShowCreateForm(false);
   };
 
   const handleEditSpecialist = (specialist: any) => {
-    console.log('Edit specialist:', specialist);
+    setEditingSpecialist(specialist);
+    setNewSpecialist({
+      name: specialist.name,
+      specialty: specialist.specialty,
+      niche: specialist.niche,
+      customPrompt: specialist.customPrompt,
+      personality: specialist.personality,
+      skills: specialist.skills,
+      avatar: specialist.avatar || '',
+      codeName: specialist.codeName || '',
+      promptTemplate: specialist.promptTemplate || '',
+      portfolios: specialist.portfolios || []
+    });
+    setShowEditForm(true);
+    setShowCreateForm(false);
   };
 
   const handleUpdateSpecialist = () => {
-    console.log('Update specialist');
+    if (!editingSpecialist) return;
+    
+    const updatedSpecialists = specialists.map(specialist =>
+      specialist.id === editingSpecialist.id
+        ? { ...specialist, ...newSpecialist }
+        : specialist
+    );
+    
+    setSpecialists(updatedSpecialists);
+    setShowEditForm(false);
+    setEditingSpecialist(null);
+    setNewSpecialist({
+      name: '',
+      specialty: '',
+      niche: '',
+      customPrompt: '',
+      personality: '',
+      skills: '',
+      avatar: '',
+      codeName: '',
+      promptTemplate: '',
+      portfolios: []
+    });
   };
 
   const handleDeleteSpecialist = (id: number) => {
-    console.log('Delete specialist:', id);
+    if (confirm('Are you sure you want to delete this specialist?')) {
+      setSpecialists(specialists.filter(specialist => specialist.id !== id));
+    }
+  };
+
+  const handleFileUpload = (file: File, type: string) => {
+    // Simulate file upload - in real app, this would upload to a service
+    const fakeUrl = URL.createObjectURL(file);
+    
+    if (type === 'avatar') {
+      setNewSpecialist(prev => ({ ...prev, avatar: fakeUrl }));
+    }
   };
 
   const handleSendEmailCampaign = () => {
@@ -226,14 +324,15 @@ const Settings = () => {
                 onEditSpecialist={handleEditSpecialist}
                 onUpdateSpecialist={handleUpdateSpecialist}
                 onDeleteSpecialist={handleDeleteSpecialist}
-                newSpecialist={{}}
-                setNewSpecialist={() => {}}
-                showCreateForm={false}
-                setShowCreateForm={() => {}}
-                showEditForm={false}
-                setShowEditForm={() => {}}
-                editingSpecialist={null}
-                setEditingSpecialist={() => {}}
+                newSpecialist={newSpecialist}
+                setNewSpecialist={setNewSpecialist}
+                showCreateForm={showCreateForm}
+                setShowCreateForm={setShowCreateForm}
+                showEditForm={showEditForm}
+                setShowEditForm={setShowEditForm}
+                editingSpecialist={editingSpecialist}
+                setEditingSpecialist={setEditingSpecialist}
+                onFileUpload={handleFileUpload}
                 auditLogs={auditLogs}
                 emailCampaign={emailCampaign}
                 setEmailCampaign={setEmailCampaign}

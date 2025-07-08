@@ -36,6 +36,7 @@ interface AdminTabProps {
   setShowEditForm: (show: boolean) => void;
   editingSpecialist: Specialist | null;
   setEditingSpecialist: (specialist: Specialist | null) => void;
+  onFileUpload: (file: File, type: string) => void;
   auditLogs: AuditLog[];
   emailCampaign: EmailCampaign;
   setEmailCampaign: (campaign: EmailCampaign) => void;
@@ -68,6 +69,7 @@ const AdminTab = ({
   setShowEditForm,
   editingSpecialist,
   setEditingSpecialist,
+  onFileUpload,
   auditLogs,
   emailCampaign,
   setEmailCampaign,
@@ -75,7 +77,11 @@ const AdminTab = ({
   announcement,
   setAnnouncement,
   onCreateAnnouncement,
-  faqItems
+  faqItems,
+  newFaq,
+  setNewFaq,
+  onAddFaq,
+  onDeleteFaq
 }: AdminTabProps) => {
   // Admin Management State
   const [admins, setAdmins] = useState<Admin[]>([
@@ -155,16 +161,6 @@ const AdminTab = ({
     console.log('Delete FAQ:', id);
   };
 
-  const handleFileUpload = (file: File, type: 'avatar' | 'categoryIcon') => {
-    // Simulate file upload - in real app, this would upload to a service
-    const fakeUrl = `https://example.com/uploads/${file.name}`;
-    
-    if (type === 'avatar') {
-      setNewSpecialist(prev => ({ ...prev, avatar: fakeUrl }));
-    }
-    
-    console.log(`Uploaded ${type}:`, fakeUrl);
-  };
 
   // Fix the announcement handler to properly handle the endDate
   const handleAnnouncementChange = (updatedAnnouncement: Announcement & { endDate?: string }) => {
@@ -195,7 +191,7 @@ const AdminTab = ({
         onCreateCategory={handleCreateCategory}
         onEditCategory={handleEditCategory}
         onDeleteCategory={handleDeleteCategory}
-        onFileUpload={handleFileUpload}
+        onFileUpload={onFileUpload}
       />
 
       <AISpecialistManagementSection 
@@ -212,7 +208,7 @@ const AdminTab = ({
         onShowEditForm={setShowEditForm}
         onSetNewSpecialist={setNewSpecialist}
         onSetEditingSpecialist={setEditingSpecialist}
-        onFileUpload={handleFileUpload}
+        onFileUpload={onFileUpload}
       />
 
       <FaqManagementSection 
