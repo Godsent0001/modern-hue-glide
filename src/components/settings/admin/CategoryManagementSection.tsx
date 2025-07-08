@@ -11,10 +11,12 @@ import { Category } from './types';
 interface CategoryManagementSectionProps {
   categories: Category[];
   onCreateCategory: (category: Omit<Category, 'id' | 'createdAt'>) => void;
+  onEditCategory: (category: Category) => void;
+  onDeleteCategory: (id: number) => void;
   onFileUpload: (file: File, type: string) => void;
 }
 
-const CategoryManagementSection = ({ categories, onCreateCategory, onFileUpload }: CategoryManagementSectionProps) => {
+const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategory, onDeleteCategory, onFileUpload }: CategoryManagementSectionProps) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newCategory, setNewCategory] = useState({
     name: '',
@@ -194,12 +196,17 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onFileUpload 
                 <TableCell>{category.createdAt}</TableCell>
                 <TableCell>
                   <div className="flex space-x-1">
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => onEditCategory(category)}
+                    >
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline"
+                      onClick={() => onDeleteCategory(category.id)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-4 h-4" />

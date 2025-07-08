@@ -5,6 +5,7 @@ import AdminManagementSection from './admin/AdminManagementSection';
 import UserManagementSection from './admin/UserManagementSection';
 import CategoryManagementSection from './admin/CategoryManagementSection';
 import AISpecialistManagementSection from './admin/AISpecialistManagementSection';
+import FaqManagementSection from './admin/FaqManagementSection';
 import MarketingToolsSection from './admin/MarketingToolsSection';
 import AuditLogSection from './admin/AuditLogSection';
 import SystemSettingsSection from './admin/SystemSettingsSection';
@@ -73,7 +74,8 @@ const AdminTab = ({
   onSendEmailCampaign,
   announcement,
   setAnnouncement,
-  onCreateAnnouncement
+  onCreateAnnouncement,
+  faqItems
 }: AdminTabProps) => {
   // Admin Management State
   const [admins, setAdmins] = useState<Admin[]>([
@@ -136,6 +138,23 @@ const AdminTab = ({
     setCategories([...categories, category]);
   };
 
+  const handleEditCategory = (category: Category) => {
+    console.log('Edit category:', category);
+  };
+
+  const handleDeleteCategory = (id: number) => {
+    setCategories(categories.filter(category => category.id !== id));
+    console.log('Delete category:', id);
+  };
+
+  const handleAddFaq = (faqData: Omit<FAQ, 'id'>) => {
+    console.log('Add FAQ:', faqData);
+  };
+
+  const handleDeleteFaq = (id: number) => {
+    console.log('Delete FAQ:', id);
+  };
+
   const handleFileUpload = (file: File, type: 'avatar' | 'categoryIcon') => {
     // Simulate file upload - in real app, this would upload to a service
     const fakeUrl = `https://example.com/uploads/${file.name}`;
@@ -174,6 +193,8 @@ const AdminTab = ({
       <CategoryManagementSection 
         categories={categories}
         onCreateCategory={handleCreateCategory}
+        onEditCategory={handleEditCategory}
+        onDeleteCategory={handleDeleteCategory}
         onFileUpload={handleFileUpload}
       />
 
@@ -192,6 +213,12 @@ const AdminTab = ({
         onSetNewSpecialist={setNewSpecialist}
         onSetEditingSpecialist={setEditingSpecialist}
         onFileUpload={handleFileUpload}
+      />
+
+      <FaqManagementSection 
+        faqItems={faqItems}
+        onAddFaq={handleAddFaq}
+        onDeleteFaq={handleDeleteFaq}
       />
 
       <MarketingToolsSection 
