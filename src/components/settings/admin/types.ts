@@ -60,6 +60,9 @@ export interface Specialist {
     description: string;
     url?: string;
     type: 'project' | 'sample' | 'testimonial';
+    documentUrl?: string;
+    documentName?: string;
+    documentType?: string;
   }>;
 }
 

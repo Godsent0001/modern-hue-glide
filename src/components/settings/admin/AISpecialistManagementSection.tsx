@@ -1,10 +1,11 @@
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Upload } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload, Search, File, X } from 'lucide-react';
 import { Specialist } from './types';
 
 interface AISpecialistManagementSectionProps {
@@ -40,6 +41,8 @@ const AISpecialistManagementSection = ({
   onSetEditingSpecialist,
   onFileUpload
 }: AISpecialistManagementSectionProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
   const handleCancel = () => {
     onShowCreateForm(false);
     onShowEditForm(false);
@@ -58,6 +61,35 @@ const AISpecialistManagementSection = ({
     });
   };
 
+  const handleDocumentUpload = (portfolioIndex: number, file: File) => {
+    // Create a fake URL for the uploaded document
+    const documentUrl = URL.createObjectURL(file);
+    const updatedPortfolios = [...(newSpecialist.portfolios || [])];
+    updatedPortfolios[portfolioIndex] = { 
+      ...updatedPortfolios[portfolioIndex], 
+      documentUrl: documentUrl,
+      documentName: file.name,
+      documentType: file.type
+    };
+    onSetNewSpecialist({...newSpecialist, portfolios: updatedPortfolios});
+  };
+
+  const removeDocument = (portfolioIndex: number) => {
+    const updatedPortfolios = [...(newSpecialist.portfolios || [])];
+    delete updatedPortfolios[portfolioIndex].documentUrl;
+    delete updatedPortfolios[portfolioIndex].documentName;
+    delete updatedPortfolios[portfolioIndex].documentType;
+    onSetNewSpecialist({...newSpecialist, portfolios: updatedPortfolios});
+  };
+
+  // Filter specialists based on search term
+  const filteredSpecialists = specialists.filter(specialist =>
+    specialist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    specialist.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    specialist.niche.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (specialist.codeName && specialist.codeName.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -71,6 +103,19 @@ const AISpecialistManagementSection = ({
         </Button>
       </CardHeader>
       <CardContent>
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder="Search specialists by name, specialty, niche, or code name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
         {(showCreateForm || showEditForm) && (
           <div className="mb-6 p-6 bg-gray-50 rounded-lg space-y-4">
             <h3 className="text-lg font-semibold">
@@ -249,6 +294,43 @@ const AISpecialistManagementSection = ({
                         Remove
                       </Button>
                     </div>
+                    
+                    {/* Document Upload Section */}
+                    <div className="border-t pt-2">
+                      <label className="block text-xs font-medium text-gray-600 mb-2">Upload Document (PDF, DOC, etc.)</label>
+                      <div className="flex items-center space-x-2">
+                        <label className="cursor-pointer">
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx,.txt,.rtf"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleDocumentUpload(index, file);
+                            }}
+                            className="hidden"
+                          />
+                          <Button type="button" variant="outline" size="sm">
+                            <Upload className="w-3 h-3 mr-1" />
+                            Upload Doc
+                          </Button>
+                        </label>
+                        {portfolio.documentUrl && (
+                          <div className="flex items-center space-x-2 bg-white px-2 py-1 rounded border">
+                            <File className="w-3 h-3 text-blue-600" />
+                            <span className="text-xs text-gray-700">{portfolio.documentName}</span>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeDocument(index)}
+                              className="p-0 h-5 w-5"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
                 <Button
@@ -303,7 +385,7 @@ const AISpecialistManagementSection = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {specialists.map((specialist) => (
+            {filteredSpecialists.map((specialist) => (
               <TableRow key={specialist.id}>
                 <TableCell>
                   <img 

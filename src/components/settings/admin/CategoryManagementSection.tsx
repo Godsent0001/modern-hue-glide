@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Image, Plus, Edit, Trash2, Upload } from 'lucide-react';
+import { Image, Plus, Edit, Trash2, Upload, X } from 'lucide-react';
 import { Category } from './types';
 
 interface CategoryManagementSectionProps {
@@ -18,6 +18,8 @@ interface CategoryManagementSectionProps {
 
 const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategory, onDeleteCategory, onFileUpload }: CategoryManagementSectionProps) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategory, setNewCategory] = useState({
     name: '',
     description: '',
@@ -32,6 +34,46 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategor
     });
     setNewCategory({ name: '', description: '', icon: '', subcategories: [''] });
     setShowCreateForm(false);
+  };
+
+  const handleEditCategory = (category: Category) => {
+    setEditingCategory(category);
+    setNewCategory({
+      name: category.name,
+      description: category.description,
+      icon: category.icon,
+      subcategories: category.subcategories.length > 0 ? category.subcategories : ['']
+    });
+    setShowEditForm(true);
+    setShowCreateForm(false);
+  };
+
+  const handleUpdateCategory = () => {
+    if (editingCategory) {
+      const updatedCategory = {
+        ...editingCategory,
+        ...newCategory,
+        subcategories: newCategory.subcategories.filter(sub => sub.trim() !== '')
+      };
+      onEditCategory(updatedCategory);
+      setShowEditForm(false);
+      setEditingCategory(null);
+      setNewCategory({ name: '', description: '', icon: '', subcategories: [''] });
+    }
+  };
+
+  const handleCancel = () => {
+    setShowCreateForm(false);
+    setShowEditForm(false);
+    setEditingCategory(null);
+    setNewCategory({ name: '', description: '', icon: '', subcategories: [''] });
+  };
+
+  const handleIconUpload = (file: File) => {
+    // Create a fake URL for the uploaded icon
+    const iconUrl = URL.createObjectURL(file);
+    setNewCategory(prev => ({ ...prev, icon: iconUrl }));
+    onFileUpload(file, 'categoryIcon');
   };
 
   const handleSubcategoryChange = (index: number, value: string) => {
@@ -54,6 +96,12 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategor
     }));
   };
 
+  const handleDeleteCategory = (id: number) => {
+    if (confirm('Are you sure you want to delete this category?')) {
+      onDeleteCategory(id);
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -70,9 +118,11 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategor
         </Button>
       </CardHeader>
       <CardContent>
-        {showCreateForm && (
+        {(showCreateForm || showEditForm) && (
           <div className="mb-6 p-6 bg-gray-50 rounded-lg space-y-4">
-            <h3 className="text-lg font-semibold">Create New Category</h3>
+            <h3 className="text-lg font-semibold">
+              {showEditForm ? `Edit ${editingCategory?.name}` : 'Create New Category'}
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
@@ -97,7 +147,7 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategor
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) onFileUpload(file, 'categoryIcon');
+                        if (file) handleIconUpload(file);
                       }}
                       className="hidden"
                     />
@@ -106,6 +156,15 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategor
                     </Button>
                   </label>
                 </div>
+                {newCategory.icon && (
+                  <div className="mt-2">
+                    <img 
+                      src={newCategory.icon} 
+                      alt="Icon preview" 
+                      className="w-12 h-12 rounded object-cover"
+                    />
+                  </div>
+                )}
               </div>
             </div>
             <div>
@@ -150,10 +209,13 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategor
               </Button>
             </div>
             <div className="flex space-x-4">
-              <Button onClick={handleCreateCategory} className="bg-green-600 hover:bg-green-700">
-                Create Category
+              <Button 
+                onClick={showEditForm ? handleUpdateCategory : handleCreateCategory} 
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {showEditForm ? 'Update Category' : 'Create Category'}
               </Button>
-              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+              <Button variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
             </div>
@@ -199,14 +261,14 @@ const CategoryManagementSection = ({ categories, onCreateCategory, onEditCategor
                     <Button 
                       size="sm" 
                       variant="outline"
-                      onClick={() => onEditCategory(category)}
+                      onClick={() => handleEditCategory(category)}
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline"
-                      onClick={() => onDeleteCategory(category.id)}
+                      onClick={() => handleDeleteCategory(category.id)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-4 h-4" />
