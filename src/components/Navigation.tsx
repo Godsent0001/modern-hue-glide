@@ -41,14 +41,6 @@ const Navigation = () => {
               Browse AI
             </Link>
             <Link
-              to="/community"
-              className={`font-medium transition-colors hover:text-blue-600 ${
-                isActive('/community') ? 'text-blue-600' : 'text-gray-700'
-              }`}
-            >
-              Community
-            </Link>
-            <Link
               to="/chat-history"
               className={`font-medium transition-colors hover:text-blue-600 ${
                 isActive('/chat-history') ? 'text-blue-600' : 'text-gray-700'
@@ -116,15 +108,6 @@ const Navigation = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Browse AI
-            </Link>
-            <Link
-              to="/community"
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:text-blue-600 hover:bg-gray-50 ${
-                isActive('/community') ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Community
             </Link>
             <Link
               to="/chat-history"
