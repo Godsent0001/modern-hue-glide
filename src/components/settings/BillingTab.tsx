@@ -34,8 +34,8 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
       id: 'standard',
       name: 'Standard Plan',
       price: 1500,
-      tokens: 500000,
-      features: ['500,000 tokens', 'Access to all AI models', 'Priority support', 'Custom templates', 'Advanced analytics'],
+      tokens: 100000,
+      features: ['100,000 tokens', 'Access to all AI models', 'Priority support', 'Custom templates', 'Advanced analytics'],
       current: false,
       priceDisplay: '₦1,500',
       approximateUSD: '≈ $0.99'
@@ -43,19 +43,19 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
     {
       id: 'premium',
       name: 'Premium Plan',
-      price: 3000,
-      tokens: 1000000,
-      features: ['1,000,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration', 'White-label solutions'],
+      price: 6500,
+      tokens: 500000,
+      features: ['500,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration', 'White-label solutions'],
       current: false,
-      priceDisplay: '₦3,000',
-      approximateUSD: '≈ $1.99'
+      priceDisplay: '₦6,500',
+      approximateUSD: '≈ $4.30'
     },
     {
       id: 'gold',
       name: 'Gold Member',
       price: 24000,
-      tokens: 10000000,
-      features: ['10,000,000 tokens', 'Access to all AI models', '24/7 VIP support', 'Priority processing', 'Custom AI training', 'Enterprise features', 'Dedicated account manager'],
+      tokens: 2000000,
+      features: ['2,000,000 tokens', 'Access to all AI models', '24/7 VIP support', 'Priority processing', 'Custom AI training', 'Enterprise features', 'Dedicated account manager'],
       current: false,
       priceDisplay: '₦24,000',
       approximateUSD: '≈ $15.99'
