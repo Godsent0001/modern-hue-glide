@@ -1,425 +1,634 @@
-import { useState } from "react";
-import Navigation from "@/components/Navigation";
-import AISpecialistCard from "@/components/AISpecialistCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Search, 
-  Filter, 
-  MessageSquare, 
-  Users, 
-  TrendingUp,
-  MessageCircle, 
-  ThumbsUp,
-  Eye,
-  Clock,
-  Send
-} from "lucide-react";
-
-interface Discussion {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  authorAvatar?: string;
-  category: string;
-  replies: Reply[];
-  likes: number;
-  views: number;
-  timestamp: string;
-}
-
-interface Reply {
-  id: number;
-  content: string;
-  author: string;
-  authorAvatar?: string;
-  timestamp: string;
-  likes: number;
-}
+import { useState, useEffect } from 'react';
+import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X, ArrowLeft, ChevronRight, MessageCircle } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import CreateDiscussionModal from '@/components/CreateDiscussionModal';
 
 const BrowseAI = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [discussionSearchTerm, setDiscussionSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [activeTab, setActiveTab] = useState("specialists");
-  const [selectedDiscussion, setSelectedDiscussion] = useState<number | null>(null);
-  const [newReply, setNewReply] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('all');
+  const [selectedRating, setSelectedRating] = useState('all');
+  const [activeTab, setActiveTab] = useState('browse');
+  const [selectedFreelancer, setSelectedFreelancer] = useState<any>(null);
+  const [showChat, setShowChat] = useState(false);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [showSubcategories, setShowSubcategories] = useState(false);
+  const [showCreateDiscussion, setShowCreateDiscussion] = useState(false);
 
-  // Updated mock data to match AISpecialistCard props
-  const specialists = [
+  const subcategories = location.state?.subcategories || [];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    if (searchParams.get('search')) {
+      setSearchTerm(searchParams.get('search') || '');
+    }
+    if (searchParams.get('category')) {
+      setSelectedCategory(searchParams.get('category') || 'all');
+      if (searchParams.get('category') !== 'all') {
+        setShowSubcategories(true);
+      }
+    }
+  }, [searchParams]);
+
+  const aiFreelancers = [
     {
       id: 1,
-      name: "Alex Chen",
-      specialty: "AI Content Writer",
-      avatar: "/placeholder.svg",
+      name: "Sarah Chen",
+      specialty: "Content Writing",
+      subSpecialty: "Blog Posts",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616c09b4a5b?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
-      completedJobs: 127,
-      hourlyRate: "$45/hr",
-      responseTime: "Within 2 hours",
-      description: "Experienced AI content writer specializing in SEO-optimized blog posts, articles, and marketing copy using advanced AI tools."
+      completedProjects: 127,
+      responseTime: "< 1 hour",
+      skills: ["Blog Posts", "SEO Content", "Social Media"],
+      description: "I create engaging blog content that drives traffic and converts readers into customers",
+      online: true
     },
     {
       id: 2,
-      name: "Sarah Johnson",
-      specialty: "Digital Marketing Strategist",
-      avatar: "/placeholder.svg",
+      name: "Michael Torres",
+      specialty: "Content Writing",
+      subSpecialty: "Website Content",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       rating: 4.8,
-      completedJobs: 89,
-      hourlyRate: "$55/hr",
-      responseTime: "Within 1 hour",
-      description: "Digital marketing expert leveraging AI for social media campaigns, PPC optimization, and analytics-driven strategies."
+      completedProjects: 89,
+      responseTime: "< 2 hours",
+      skills: ["Website Copy", "Landing Pages", "Product Descriptions"],
+      description: "Specializing in website content that enhances user experience and boosts conversions",
+      online: true
     },
     {
       id: 3,
-      name: "Mike Rodriguez",
-      specialty: "AI-Powered Graphic Designer",
-      avatar: "/placeholder.svg",
+      name: "Jessica Park",
+      specialty: "Content Writing",
+      subSpecialty: "Articles",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
-      completedJobs: 156,
-      hourlyRate: "$40/hr",
-      responseTime: "Within 3 hours",
-      description: "Creative designer using AI tools for logo design, branding, and UI/UX projects with modern aesthetics."
+      completedProjects: 156,
+      responseTime: "< 1 hour",
+      skills: ["Research Articles", "Industry News", "Thought Leadership"],
+      description: "Creating well-researched articles that establish authority and engage audiences",
+      online: false
     },
     {
       id: 4,
-      name: "Emily Davis",
-      specialty: "Full Stack Developer",
-      avatar: "/placeholder.svg",
+      name: "Marcus Rodriguez",
+      specialty: "Copywriting",
+      subSpecialty: "Sales Pages",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
       rating: 4.7,
-      completedJobs: 203,
-      hourlyRate: "$65/hr",
-      responseTime: "Within 4 hours",
-      description: "Full stack developer integrating AI solutions with React, Node.js, and modern web technologies."
+      completedProjects: 203,
+      responseTime: "< 30 min",
+      skills: ["Sales Copy", "Conversion Optimization", "Psychology"],
+      description: "High-converting sales pages that turn visitors into paying customers",
+      online: true
     },
     {
       id: 5,
-      name: "David Wilson",
-      specialty: "AI Data Analyst",
-      avatar: "/placeholder.svg",
+      name: "Amanda Foster",
+      specialty: "Copywriting",
+      subSpecialty: "Ad Copy",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
       rating: 4.8,
-      completedJobs: 94,
-      hourlyRate: "$50/hr",
-      responseTime: "Within 2 hours",
-      description: "Data analyst using Python, SQL, and AI-powered visualization tools to deliver actionable business insights."
+      completedProjects: 134,
+      responseTime: "< 1 hour",
+      skills: ["Facebook Ads", "Google Ads", "Social Media"],
+      description: "Crafting compelling ad copy that maximizes click-through rates and ROI",
+      online: true
     },
     {
       id: 6,
-      name: "Lisa Park",
-      specialty: "AI Video Editor",
-      avatar: "/placeholder.svg",
+      name: "David Kim",
+      specialty: "Copywriting",
+      subSpecialty: "Email Marketing Campaigns",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
       rating: 4.9,
-      completedJobs: 78,
-      hourlyRate: "$45/hr",
-      responseTime: "Within 6 hours",
-      description: "Video editor leveraging AI for After Effects, Premiere Pro, and motion graphics automation."
+      completedProjects: 167,
+      responseTime: "< 2 hours",
+      skills: ["Email Sequences", "Newsletter", "Automation"],
+      description: "Email campaigns that nurture leads and drive consistent sales",
+      online: false
+    },
+    {
+      id: 7,
+      name: "Lisa Wang",
+      specialty: "Business Writing",
+      subSpecialty: "Business Proposals",
+      avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=150&h=150&fit=crop&crop=face",
+      rating: 4.8,
+      completedProjects: 92,
+      responseTime: "< 3 hours",
+      skills: ["Proposals", "RFP Responses", "Executive Summaries"],
+      description: "Professional business proposals that win contracts and secure partnerships",
+      online: true
+    },
+    {
+      id: 8,
+      name: "Robert Chen",
+      specialty: "Business Writing",
+      subSpecialty: "Reports",
+      avatar: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=150&h=150&fit=crop&crop=face",
+      rating: 4.7,
+      completedProjects: 78,
+      responseTime: "< 4 hours",
+      skills: ["Financial Reports", "Market Analysis", "Performance Reviews"],
+      description: "Comprehensive business reports that inform strategic decision-making",
+      online: true
+    },
+    {
+      id: 9,
+      name: "Emily Davis",
+      specialty: "Business Writing",
+      subSpecialty: "Presentations",
+      avatar: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=150&h=150&fit=crop&crop=face",
+      rating: 4.9,
+      completedProjects: 114,
+      responseTime: "< 2 hours",
+      skills: ["PowerPoint", "Keynote", "Sales Presentations"],
+      description: "Compelling presentations that captivate audiences and drive action",
+      online: true
+    },
+    {
+      id: 10,
+      name: "Alex Morgan",
+      specialty: "Creative Writing",
+      subSpecialty: "Short Stories",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      rating: 4.8,
+      completedProjects: 85,
+      responseTime: "< 1 day",
+      skills: ["Fiction", "Character Development", "Plot Structure"],
+      description: "Captivating short stories that entertain and engage readers",
+      online: false
+    },
+    {
+      id: 11,
+      name: "Sofia Martinez",
+      specialty: "Creative Writing",
+      subSpecialty: "Poetry",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+      rating: 4.9,
+      completedProjects: 67,
+      responseTime: "< 6 hours",
+      skills: ["Modern Poetry", "Classical Forms", "Spoken Word"],
+      description: "Beautiful poetry that touches hearts and expresses deep emotions",
+      online: true
+    },
+    {
+      id: 12,
+      name: "James Wilson",
+      specialty: "Creative Writing",
+      subSpecialty: "Screenplays",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      rating: 4.7,
+      completedProjects: 43,
+      responseTime: "< 1 day",
+      skills: ["Film Scripts", "TV Scripts", "Dialogue"],
+      description: "Professional screenplays that bring stories to life on screen",
+      online: true
     }
   ];
 
-  // Mock data for community discussions
-  const discussions: Discussion[] = [
+  const communityPosts = [
     {
       id: 1,
-      title: "Best practices for AI-powered content creation",
-      content: "I've been experimenting with different AI tools for content creation. What are your best practices?",
-      author: "Sarah Johnson",
-      category: "Content Writing",
-      replies: [
-        {
-          id: 1,
-          content: "I always start with a clear brief and iterate on the output. Works great!",
-          author: "Mike Davis",
-          timestamp: "2 hours ago",
-          likes: 5
-        },
-        {
-          id: 2,
-          content: "Using prompt engineering techniques has improved my results significantly.",
-          author: "Emily Chen",
-          timestamp: "1 hour ago",
-          likes: 8
-        }
-      ],
-      likes: 23,
-      views: 156,
-      timestamp: "4 hours ago"
+      author: "Alex Thompson",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
+      title: "How to effectively communicate with AI copywriters?",
+      content: "I've been working with AI writers and want to share some tips on getting the best results...",
+      likes: 24,
+      replies: 8,
+      time: "2 hours ago",
+      category: "Tips & Tricks"
     },
     {
       id: 2,
-      title: "How to optimize AI prompts for better results",
-      content: "Looking for tips on writing effective prompts that get consistent, high-quality outputs.",
-      author: "David Wilson",
-      category: "AI & Technology",
-      replies: [
-        {
-          id: 3,
-          content: "Be specific with context and examples. It makes a huge difference!",
-          author: "Lisa Park",
-          timestamp: "3 hours ago",
-          likes: 12
-        }
-      ],
-      likes: 34,
-      views: 289,
-      timestamp: "6 hours ago"
+      author: "Jessica Lee",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=50&h=50&fit=crop&crop=face",
+      title: "Best AI specialists for e-commerce projects?",
+      content: "Looking for recommendations for AI specialists who understand e-commerce well...",
+      likes: 18,
+      replies: 12,
+      time: "5 hours ago",
+      category: "Recommendations"
+    },
+    {
+      id: 3,
+      author: "Mike Johnson",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
+      title: "AI vs Traditional Freelancers - My Experience",
+      content: "After 6 months of using both, here's what I've learned about the differences...",
+      likes: 42,
+      replies: 15,
+      time: "1 day ago",
+      category: "Discussion"
     }
   ];
 
-  const categories = ["all", "Content Writing", "AI & Technology", "Digital Marketing", "Graphic Design"];
+  const categories = [
+    "all", "Content Writing", "Copywriting", "Business Writing", "Ghost Writing",
+    "Academic Writing", "Journalism and Editorial", "Resume and Career Writing",
+    "Legal and Financial Writing", "Creative Writing", "Editing and Proofreading",
+    "Marketing Content Creation", "Emerging Writings"
+  ];
 
-  const filteredSpecialists = specialists.filter(specialist =>
-    specialist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    specialist.specialty.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const ratingOptions = [
+    { value: 'all', label: 'All Ratings' },
+    { value: '4.5+', label: '4.5+ Stars' },
+    { value: '4.0+', label: '4.0+ Stars' },
+    { value: '3.5+', label: '3.5+ Stars' }
+  ];
 
-  const filteredDiscussions = discussions.filter(discussion => {
-    const matchesSearch = 
-      discussion.title.toLowerCase().includes(discussionSearchTerm.toLowerCase()) ||
-      discussion.content.toLowerCase().includes(discussionSearchTerm.toLowerCase()) ||
-      discussion.author.toLowerCase().includes(discussionSearchTerm.toLowerCase());
+  const filteredFreelancers = aiFreelancers.filter(freelancer => {
+    const matchesSearch = freelancer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         freelancer.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         freelancer.subSpecialty.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || freelancer.specialty === selectedCategory;
+    const matchesSubcategory = selectedSubcategory === 'all' || freelancer.subSpecialty === selectedSubcategory;
     
-    const matchesCategory = selectedCategory === "all" || discussion.category === selectedCategory;
+    let matchesRating = true;
+    if (selectedRating !== 'all') {
+      const minRating = parseFloat(selectedRating.replace('+', ''));
+      matchesRating = freelancer.rating >= minRating;
+    }
     
-    return matchesSearch && matchesCategory;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesRating;
   });
 
-  const handleReplySubmit = (discussionId: number) => {
-    if (newReply.trim()) {
-      // In a real app, this would make an API call
-      console.log(`Replying to discussion ${discussionId}: ${newReply}`);
-      setNewReply("");
-    }
+  const handleBackToCategories = () => {
+    setSelectedCategory('all');
+    setSelectedSubcategory('all');
+    setShowSubcategories(false);
+    navigate('/browse-ai');
+  };
+
+  const handleSubcategorySelect = (subcategory: string) => {
+    setSelectedSubcategory(subcategory);
+  };
+
+  const handleHire = (freelancer: any) => {
+    navigate(`/chat/${freelancer.id}`, { state: { freelancer } });
+  };
+
+  const handleViewProfile = (freelancer: any) => {
+    navigate(`/ai-specialist/${freelancer.id}`, { state: { freelancer } });
+  };
+
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    const userMessage = {
+      id: messages.length + 1,
+      sender: 'user',
+      content: newMessage,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setNewMessage('');
+
+    setTimeout(() => {
+      const aiResponse = {
+        id: messages.length + 2,
+        sender: 'ai',
+        content: "That sounds like an interesting project! I have experience with similar work. Let me know more details about your requirements and timeline.",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, aiResponse]);
+    }, 1000);
+  };
+
+  const handleCreateDiscussion = (discussion: { title: string; content: string; category: string }) => {
+    console.log('New discussion created:', discussion);
+    // In a real app, this would be sent to the backend
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <main className="pt-20 pb-16">
+      <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
+          {showSubcategories && selectedCategory !== 'all' && (
+            <div className="flex items-center mb-6 text-sm text-gray-600">
+              <button 
+                onClick={handleBackToHome}
+                className="flex items-center hover:text-blue-600 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Home
+              </button>
+              <ChevronRight className="w-4 h-4 mx-2" />
+              <button 
+                onClick={handleBackToCategories}
+                className="hover:text-blue-600 transition-colors"
+              >
+                All Categories
+              </button>
+              <ChevronRight className="w-4 h-4 mx-2" />
+              <span className="text-gray-900 font-medium">{selectedCategory}</span>
+            </div>
+          )}
+
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse AI Specialists</h1>
-            <p className="text-gray-600">Find the perfect AI specialist for your project</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {showSubcategories && selectedCategory !== 'all' 
+                ? `${selectedCategory} Specialists` 
+                : 'AI Specialists'
+              }
+            </h1>
+            <p className="text-gray-600">Connect with AI professionals tailored to your needs</p>
           </div>
 
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList className="grid w-full grid-cols-2 max-w-md">
-              <TabsTrigger value="specialists">AI Specialists</TabsTrigger>
-              <TabsTrigger value="discussions">Community Discussions</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="specialists" className="space-y-6">
-              {/* Search and Filter */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <Input
-                    type="text"
-                    placeholder="Search specialists, skills, or expertise..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2"
-                  />
+          {showSubcategories && subcategories.length > 0 && (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-lg">Subcategories</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={selectedSubcategory === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleSubcategorySelect('all')}
+                  >
+                    All {selectedCategory}
+                  </Button>
+                  {subcategories.map((subcategory: string, index: number) => (
+                    <Button
+                      key={index}
+                      variant={selectedSubcategory === subcategory ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handleSubcategorySelect(subcategory)}
+                    >
+                      {subcategory}
+                    </Button>
+                  ))}
                 </div>
-                <Button variant="outline">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filters
-                </Button>
-              </div>
+              </CardContent>
+            </Card>
+          )}
 
-              {/* Specialists Grid */}
+          <div className="mb-8">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('browse')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'browse'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Browse Specialists
+                </button>
+                <button
+                  onClick={() => setActiveTab('community')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'community'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Community
+                </button>
+              </nav>
+            </div>
+          </div>
+
+          {activeTab === 'browse' && (
+            <>
+              {/* Search and Filters */}
+              <Card className="mb-8">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="text"
+                        placeholder="Search specialists..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                      <Filter className="text-gray-500 w-5 h-5 flex-shrink-0" />
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                        {!showSubcategories && (
+                          <select
+                            value={selectedCategory}
+                            onChange={(e) => {
+                              setSelectedCategory(e.target.value);
+                              if (e.target.value !== 'all') {
+                                // Simulate getting subcategories for the selected category
+                                const categorySubcategories = {
+                                  'Content Writing': ['Blog Posts', 'Website Content', 'Articles', 'SEO Content'],
+                                  'Copywriting': ['Sales Pages', 'Ad Copy', 'Email Marketing Campaigns'],
+                                  'Business Writing': ['Business Proposals', 'Reports', 'Presentations']
+                                };
+                                const subs = categorySubcategories[e.target.value as keyof typeof categorySubcategories] || [];
+                                setShowSubcategories(true);
+                                // Update URL to include subcategories
+                                navigate(`/browse-ai?category=${encodeURIComponent(e.target.value)}`, {
+                                  state: { subcategories: subs }
+                                });
+                              }
+                            }}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                          >
+                            {categories.map(category => (
+                              <option key={category} value={category}>
+                                {category === 'all' ? 'All Categories' : category}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                        <select
+                          value={selectedRating}
+                          onChange={(e) => setSelectedRating(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        >
+                          {ratingOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AI Specialists Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredSpecialists.map((specialist) => (
-                  <AISpecialistCard key={specialist.id} freelancer={specialist} />
+                {filteredFreelancers.map((freelancer) => (
+                  <Card key={freelancer.id} className="hover:shadow-lg transition-shadow duration-200">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center space-x-3 flex-1 min-w-0">
+                          <div className="relative flex-shrink-0">
+                            <img
+                              src={freelancer.avatar}
+                              alt={freelancer.name}
+                              className="w-12 h-12 rounded-full object-cover"
+                            />
+                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${freelancer.online ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <CardTitle className="text-lg truncate">{freelancer.name}</CardTitle>
+                            <p className="text-sm text-blue-600 truncate">{freelancer.specialty}</p>
+                            <p className="text-xs text-gray-500 truncate">{freelancer.subSpecialty}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600 flex-shrink-0 ml-2">
+                          <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                          <span>{freelancer.rating}</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <p className="text-gray-600 text-sm">{freelancer.description}</p>
+
+                      <div className="flex flex-wrap gap-2">
+                        {freelancer.skills.map((skill, index) => (
+                          <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <Clock className="w-4 h-4 mr-1" />
+                          <span>{freelancer.responseTime}</span>
+                        </div>
+                        <span className="font-medium text-green-600">FREE</span>
+                      </div>
+
+                      <div className="flex space-x-2 pt-2">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1" 
+                          size="sm"
+                          onClick={() => handleViewProfile(freelancer)}
+                        >
+                          View Profile
+                        </Button>
+                        <Button 
+                          className="flex-1" 
+                          size="sm"
+                          onClick={() => handleHire(freelancer)}
+                        >
+                          <MessageCircle className="w-4 h-4 mr-1" />
+                          Message
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
-            </TabsContent>
+            </>
+          )}
 
-            <TabsContent value="discussions" className="space-y-6">
-              {/* Community Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center">
-                      <MessageSquare className="w-8 h-8 text-blue-600 mr-3" />
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">1,247</p>
-                        <p className="text-gray-600">Discussions</p>
-                      </div>
+          {activeTab === 'community' && (
+            <div className="space-y-6">
+              {/* Community Header */}
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold">Community Discussions</h2>
+                      <p className="text-gray-600">Connect with other users and share experiences</p>
                     </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center">
-                      <Users className="w-8 h-8 text-green-600 mr-3" />
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">3,892</p>
-                        <p className="text-gray-600">Members</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center">
-                      <TrendingUp className="w-8 h-8 text-purple-600 mr-3" />
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">892</p>
-                        <p className="text-gray-600">Active Today</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Search and Filter for Discussions */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <Input
-                    type="text"
-                    placeholder="Search discussions, topics, authors..."
-                    value={discussionSearchTerm}
-                    onChange={(e) => setDiscussionSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2"
-                  />
-                </div>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md bg-white"
-                >
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category === "all" ? "All Categories" : category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Discussions List */}
-              <div className="space-y-6">
-                {filteredDiscussions.length > 0 ? (
-                  filteredDiscussions.map((discussion) => (
-                    <Card key={discussion.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-3">
-                            <Avatar className="w-10 h-10">
-                              <AvatarImage src={discussion.authorAvatar} />
-                              <AvatarFallback>{discussion.author.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-semibold text-gray-900">{discussion.author}</p>
-                              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                                <Clock className="w-4 h-4" />
-                                <span>{discussion.timestamp}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <Badge variant="secondary">{discussion.category}</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <CardTitle className="text-lg mb-3">{discussion.title}</CardTitle>
-                        <p className="text-gray-700 mb-4">{discussion.content}</p>
-                        
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <div className="flex items-center">
-                              <MessageCircle className="w-4 h-4 mr-1" />
-                              {discussion.replies.length}
-                            </div>
-                            <div className="flex items-center">
-                              <ThumbsUp className="w-4 h-4 mr-1" />
-                              {discussion.likes}
-                            </div>
-                            <div className="flex items-center">
-                              <Eye className="w-4 h-4 mr-1" />
-                              {discussion.views}
-                            </div>
-                          </div>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => setSelectedDiscussion(selectedDiscussion === discussion.id ? null : discussion.id)}
-                          >
-                            {selectedDiscussion === discussion.id ? 'Hide Replies' : 'View Replies'}
-                          </Button>
-                        </div>
-
-                        {/* Replies Section */}
-                        {selectedDiscussion === discussion.id && (
-                          <div className="border-t pt-4 space-y-4">
-                            {/* Existing Replies */}
-                            {discussion.replies.map((reply) => (
-                              <div key={reply.id} className="bg-gray-50 p-4 rounded-lg">
-                                <div className="flex items-start space-x-3">
-                                  <Avatar className="w-8 h-8">
-                                    <AvatarImage src={reply.authorAvatar} />
-                                    <AvatarFallback>{reply.author.charAt(0)}</AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1">
-                                    <div className="flex items-center space-x-2 mb-2">
-                                      <p className="font-medium text-sm text-gray-900">{reply.author}</p>
-                                      <span className="text-xs text-gray-500">{reply.timestamp}</span>
-                                    </div>
-                                    <p className="text-gray-700 text-sm mb-2">{reply.content}</p>
-                                    <Button variant="ghost" size="sm" className="text-xs">
-                                      <ThumbsUp className="w-3 h-3 mr-1" />
-                                      {reply.likes}
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-
-                            {/* Reply Form */}
-                            <div className="flex space-x-3">
-                              <Avatar className="w-8 h-8">
-                                <AvatarFallback>You</AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1 flex space-x-2">
-                                <Input
-                                  type="text"
-                                  placeholder="Write a reply..."
-                                  value={newReply}
-                                  onChange={(e) => setNewReply(e.target.value)}
-                                  className="flex-1"
-                                />
-                                <Button 
-                                  size="sm"
-                                  onClick={() => handleReplySubmit(discussion.id)}
-                                  disabled={!newReply.trim()}
-                                >
-                                  <Send className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No discussions found</h3>
-                    <p className="text-gray-500">Try adjusting your search terms or category filter</p>
+                    <Button onClick={() => setShowCreateDiscussion(true)}>
+                      Start Discussion
+                    </Button>
                   </div>
-                )}
+                  <div className="flex items-center space-x-6 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      <span>2,847 members</span>
+                    </div>
+                    <div className="flex items-center">
+                      <MessageSquare className="w-4 h-4 mr-1" />
+                      <span>156 discussions</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Community Posts */}
+              <div className="space-y-4">
+                {communityPosts.map((post) => (
+                  <Card key={post.id} className="hover:shadow-md transition-shadow duration-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <img
+                          src={post.avatar}
+                          alt={post.author}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <h3 className="font-medium text-gray-900">{post.title}</h3>
+                              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                <span>{post.author}</span>
+                                <span>•</span>
+                                <span>{post.time}</span>
+                                <span>•</span>
+                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                                  {post.category}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-gray-600 mb-3">{post.content}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <button className="flex items-center hover:text-red-600 transition-colors">
+                              <Heart className="w-4 h-4 mr-1" />
+                              <span>{post.likes}</span>
+                            </button>
+                            <button className="flex items-center hover:text-blue-600 transition-colors">
+                              <Reply className="w-4 h-4 mr-1" />
+                              <span>{post.replies} replies</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          )}
         </div>
-      </main>
+      </div>
+
+      <CreateDiscussionModal
+        isOpen={showCreateDiscussion}
+        onClose={() => setShowCreateDiscussion(false)}
+        onSubmit={handleCreateDiscussion}
+      />
+
+      <Footer />
     </div>
   );
 };
