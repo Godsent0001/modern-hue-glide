@@ -216,9 +216,11 @@ const Community = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardTitle className="text-lg mb-3 hover:text-blue-600 cursor-pointer">
-                      {discussion.title}
-                    </CardTitle>
+                    <Link to={`/discussion/${discussion.id}`}>
+                      <CardTitle className="text-lg mb-3 hover:text-blue-600 cursor-pointer">
+                        {discussion.title}
+                      </CardTitle>
+                    </Link>
                     <p className="text-gray-700 mb-4 line-clamp-2">{discussion.content}</p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
@@ -235,9 +237,11 @@ const Community = () => {
                           {discussion.views}
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
-                        Join Discussion
-                      </Button>
+                      <Link to={`/discussion/${discussion.id}`}>
+                        <Button variant="ghost" size="sm">
+                          Join Discussion
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>
