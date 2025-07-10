@@ -25,9 +25,9 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
       id: 'free',
       name: 'Free Plan',
       price: 0,
-      tokens: 10000,
-      features: ['10,000 tokens per day', 'Access to all AI models', 'Basic support', 'Community access'],
-      current: true,
+      tokens: 5000,
+      features: ['5,000 tokens per day', 'Access to all AI models', 'Basic support', 'Community access'],
+      current: false,
       priceDisplay: 'Free'
     },
     {
@@ -91,7 +91,7 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {updatedPlans.map((plan) => (
           <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''} ${plan.id === 'gold' ? 'border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50' : ''}`}>
-            {plan.current && (
+            {plan.current && plan.id !== 'free' && (
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
                 <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
                   Current Plan
@@ -117,7 +117,7 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
                 </div>
               )}
               <p className="text-gray-600">
-                {plan.id === 'free' ? '10K tokens/day' : formatTokens(plan.tokens) + ' tokens'}
+                {plan.id === 'free' ? '5K tokens/day' : formatTokens(plan.tokens) + ' tokens'}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -137,7 +137,7 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
                   Pay Now
                 </Button>
               )}
-              {plan.current && (
+              {plan.current && plan.id !== 'free' && (
                 <div className="text-center text-sm text-gray-600">
                   Your current plan
                 </div>
