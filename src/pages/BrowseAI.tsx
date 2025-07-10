@@ -4,6 +4,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import CreateDiscussionModal from '@/components/CreateDiscussionModal';
 
@@ -22,6 +23,7 @@ const BrowseAI = () => {
   const [newMessage, setNewMessage] = useState('');
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [showCreateDiscussion, setShowCreateDiscussion] = useState(false);
+  const [communitySearchTerm, setCommunitySearchTerm] = useState('');
 
   const subcategories = location.state?.subcategories || [];
 
@@ -262,6 +264,14 @@ const BrowseAI = () => {
     }
     
     return matchesSearch && matchesCategory && matchesSubcategory && matchesRating;
+  });
+
+  const filteredCommunityPosts = communityPosts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(communitySearchTerm.toLowerCase()) ||
+                         post.content.toLowerCase().includes(communitySearchTerm.toLowerCase()) ||
+                         post.author.toLowerCase().includes(communitySearchTerm.toLowerCase()) ||
+                         post.category.toLowerCase().includes(communitySearchTerm.toLowerCase());
+    return matchesSearch;
   });
 
   const handleBackToCategories = () => {
@@ -561,6 +571,21 @@ const BrowseAI = () => {
                       Start Discussion
                     </Button>
                   </div>
+                  
+                  {/* Search Bar for Community */}
+                  <div className="mb-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <Input
+                        type="text"
+                        placeholder="Search discussions..."
+                        value={communitySearchTerm}
+                        onChange={(e) => setCommunitySearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
                   <div className="flex items-center space-x-6 text-sm text-gray-600">
                     <div className="flex items-center">
                       <Users className="w-4 h-4 mr-1" />
@@ -576,7 +601,7 @@ const BrowseAI = () => {
 
               {/* Community Posts */}
               <div className="space-y-4">
-                {communityPosts.map((post) => (
+                {filteredCommunityPosts.map((post) => (
                   <Card key={post.id} className="hover:shadow-md transition-shadow duration-200">
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
