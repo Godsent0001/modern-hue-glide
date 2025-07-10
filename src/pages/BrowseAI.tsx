@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import CreateDiscussionModal from '@/components/CreateDiscussionModal';
 
@@ -24,6 +25,10 @@ const BrowseAI = () => {
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [showCreateDiscussion, setShowCreateDiscussion] = useState(false);
   const [communitySearchTerm, setCommunitySearchTerm] = useState('');
+  const [showReplies, setShowReplies] = useState<{[key: number]: boolean}>({});
+  const [showReplyForm, setShowReplyForm] = useState<{[key: number]: boolean}>({});
+  const [replyText, setReplyText] = useState<{[key: number]: string}>({});
+  const [replies, setReplies] = useState<{[key: number]: any[]}>({});
 
   const subcategories = location.state?.subcategories || [];
 
@@ -39,6 +44,35 @@ const BrowseAI = () => {
         setShowSubcategories(true);
       }
     }
+
+    // Initialize sample replies
+    setReplies({
+      1: [
+        {
+          id: 1,
+          author: "Sarah Wilson",
+          avatar: "https://images.unsplash.com/photo-1494790108755-2616c09b4a5b?w=50&h=50&fit=crop&crop=face",
+          content: "Great tips! I especially found the part about setting clear expectations helpful.",
+          time: "1 hour ago"
+        },
+        {
+          id: 2,
+          author: "Mark Johnson",
+          avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face",
+          content: "Thanks for sharing this. Do you have any specific examples of prompts that work well?",
+          time: "30 minutes ago"
+        }
+      ],
+      2: [
+        {
+          id: 3,
+          author: "Emma Davis",
+          avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face",
+          content: "I'd recommend checking out Content AI Pro - they have great e-commerce specialists.",
+          time: "3 hours ago"
+        }
+      ]
+    });
   }, [searchParams]);
 
   const aiFreelancers = [
@@ -325,6 +359,48 @@ const BrowseAI = () => {
   const handleCreateDiscussion = (discussion: { title: string; content: string; category: string }) => {
     console.log('New discussion created:', discussion);
     // In a real app, this would be sent to the backend
+  };
+
+  const toggleReplies = (postId: number) => {
+    setShowReplies(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+  };
+
+  const toggleReplyForm = (postId: number) => {
+    setShowReplyForm(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+  };
+
+  const handleReplySubmit = (postId: number) => {
+    const replyContent = replyText[postId]?.trim();
+    if (!replyContent) return;
+
+    const newReply = {
+      id: Date.now(),
+      author: "You",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face",
+      content: replyContent,
+      time: "Just now"
+    };
+
+    setReplies(prev => ({
+      ...prev,
+      [postId]: [...(prev[postId] || []), newReply]
+    }));
+
+    setReplyText(prev => ({
+      ...prev,
+      [postId]: ''
+    }));
+
+    setShowReplyForm(prev => ({
+      ...prev,
+      [postId]: false
+    }));
   };
 
   return (
@@ -626,16 +702,85 @@ const BrowseAI = () => {
                             </div>
                           </div>
                           <p className="text-gray-600 mb-3">{post.content}</p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                             <button className="flex items-center hover:text-red-600 transition-colors">
                               <Heart className="w-4 h-4 mr-1" />
                               <span>{post.likes}</span>
                             </button>
-                            <button className="flex items-center hover:text-blue-600 transition-colors">
+                            <button 
+                              className="flex items-center hover:text-blue-600 transition-colors"
+                              onClick={() => toggleReplies(post.id)}
+                            >
+                              <MessageSquare className="w-4 h-4 mr-1" />
+                              <span>{replies[post.id]?.length || 0} replies</span>
+                            </button>
+                            <button 
+                              className="flex items-center hover:text-green-600 transition-colors"
+                              onClick={() => toggleReplyForm(post.id)}
+                            >
                               <Reply className="w-4 h-4 mr-1" />
-                              <span>{post.replies} replies</span>
+                              <span>Reply</span>
                             </button>
                           </div>
+
+                          {/* Reply Form */}
+                          {showReplyForm[post.id] && (
+                            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                              <Textarea
+                                placeholder="Write your reply..."
+                                value={replyText[post.id] || ''}
+                                onChange={(e) => setReplyText(prev => ({
+                                  ...prev,
+                                  [post.id]: e.target.value
+                                }))}
+                                className="mb-3"
+                                rows={3}
+                              />
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm"
+                                  onClick={() => handleReplySubmit(post.id)}
+                                  disabled={!replyText[post.id]?.trim()}
+                                >
+                                  <Send className="w-4 h-4 mr-1" />
+                                  Post Reply
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => toggleReplyForm(post.id)}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Replies Section */}
+                          {showReplies[post.id] && replies[post.id] && (
+                            <div className="mt-4 space-y-3">
+                              <div className="border-t pt-3">
+                                <h4 className="text-sm font-medium text-gray-700 mb-3">Replies</h4>
+                                {replies[post.id].map((reply) => (
+                                  <div key={reply.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                                    <img
+                                      src={reply.avatar}
+                                      alt={reply.author}
+                                      className="w-8 h-8 rounded-full object-cover"
+                                    />
+                                    <div className="flex-1">
+                                      <div className="flex items-center space-x-2 text-sm">
+                                        <span className="font-medium text-gray-900">{reply.author}</span>
+                                        <span className="text-gray-500">•</span>
+                                        <span className="text-gray-500">{reply.time}</span>
+                                      </div>
+                                      <p className="text-gray-700 text-sm mt-1">{reply.content}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </CardContent>
