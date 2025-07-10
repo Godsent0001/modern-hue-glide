@@ -50,73 +50,73 @@ const BrowseAI = () => {
   const [selectedDiscussion, setSelectedDiscussion] = useState<number | null>(null);
   const [newReply, setNewReply] = useState("");
 
-  // Mock data for AI specialists
+  // Updated mock data to match AISpecialistCard props
   const specialists = [
     {
       id: 1,
       name: "Alex Chen",
-      title: "AI Content Writer",
-      rating: 4.9,
-      reviews: 127,
-      hourlyRate: 45,
-      skills: ["Content Writing", "SEO", "Blog Posts"],
+      specialty: "AI Content Writer",
       avatar: "/placeholder.svg",
-      isOnline: true
+      rating: 4.9,
+      completedJobs: 127,
+      hourlyRate: "$45/hr",
+      responseTime: "Within 2 hours",
+      description: "Experienced AI content writer specializing in SEO-optimized blog posts, articles, and marketing copy using advanced AI tools."
     },
     {
       id: 2,
       name: "Sarah Johnson",
-      title: "Digital Marketing Strategist",
-      rating: 4.8,
-      reviews: 89,
-      hourlyRate: 55,
-      skills: ["Social Media", "PPC", "Analytics"],
+      specialty: "Digital Marketing Strategist",
       avatar: "/placeholder.svg",
-      isOnline: false
+      rating: 4.8,
+      completedJobs: 89,
+      hourlyRate: "$55/hr",
+      responseTime: "Within 1 hour",
+      description: "Digital marketing expert leveraging AI for social media campaigns, PPC optimization, and analytics-driven strategies."
     },
     {
       id: 3,
       name: "Mike Rodriguez",
-      title: "Graphic Designer",
-      rating: 4.9,
-      reviews: 156,
-      hourlyRate: 40,
-      skills: ["Logo Design", "Branding", "UI/UX"],
+      specialty: "AI-Powered Graphic Designer",
       avatar: "/placeholder.svg",
-      isOnline: true
+      rating: 4.9,
+      completedJobs: 156,
+      hourlyRate: "$40/hr",
+      responseTime: "Within 3 hours",
+      description: "Creative designer using AI tools for logo design, branding, and UI/UX projects with modern aesthetics."
     },
     {
       id: 4,
       name: "Emily Davis",
-      title: "Web Developer",
-      rating: 4.7,
-      reviews: 203,
-      hourlyRate: 65,
-      skills: ["React", "Node.js", "Full Stack"],
+      specialty: "Full Stack Developer",
       avatar: "/placeholder.svg",
-      isOnline: true
+      rating: 4.7,
+      completedJobs: 203,
+      hourlyRate: "$65/hr",
+      responseTime: "Within 4 hours",
+      description: "Full stack developer integrating AI solutions with React, Node.js, and modern web technologies."
     },
     {
       id: 5,
       name: "David Wilson",
-      title: "Data Analyst",
-      rating: 4.8,
-      reviews: 94,
-      hourlyRate: 50,
-      skills: ["Python", "SQL", "Visualization"],
+      specialty: "AI Data Analyst",
       avatar: "/placeholder.svg",
-      isOnline: false
+      rating: 4.8,
+      completedJobs: 94,
+      hourlyRate: "$50/hr",
+      responseTime: "Within 2 hours",
+      description: "Data analyst using Python, SQL, and AI-powered visualization tools to deliver actionable business insights."
     },
     {
       id: 6,
       name: "Lisa Park",
-      title: "Video Editor",
-      rating: 4.9,
-      reviews: 78,
-      hourlyRate: 45,
-      skills: ["After Effects", "Premiere", "Motion Graphics"],
+      specialty: "AI Video Editor",
       avatar: "/placeholder.svg",
-      isOnline: true
+      rating: 4.9,
+      completedJobs: 78,
+      hourlyRate: "$45/hr",
+      responseTime: "Within 6 hours",
+      description: "Video editor leveraging AI for After Effects, Premiere Pro, and motion graphics automation."
     }
   ];
 
@@ -173,8 +173,7 @@ const BrowseAI = () => {
 
   const filteredSpecialists = specialists.filter(specialist =>
     specialist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    specialist.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    specialist.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+    specialist.specialty.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredDiscussions = discussions.filter(discussion => {
@@ -237,7 +236,7 @@ const BrowseAI = () => {
               {/* Specialists Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredSpecialists.map((specialist) => (
-                  <AISpecialistCard key={specialist.id} specialist={specialist} />
+                  <AISpecialistCard key={specialist.id} freelancer={specialist} />
                 ))}
               </div>
             </TabsContent>
