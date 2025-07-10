@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X, ArrowLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import Navigation from '@/components/Navigation';
@@ -318,10 +317,6 @@ const BrowseAI = () => {
     // In a real app, this would be sent to the backend
   };
 
-  const handleViewReplies = () => {
-    navigate('/replies');
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -611,10 +606,7 @@ const BrowseAI = () => {
                               <Heart className="w-4 h-4 mr-1" />
                               <span>{post.likes}</span>
                             </button>
-                            <button 
-                              className="flex items-center hover:text-blue-600 transition-colors"
-                              onClick={handleViewReplies}
-                            >
+                            <button className="flex items-center hover:text-blue-600 transition-colors">
                               <Reply className="w-4 h-4 mr-1" />
                               <span>{post.replies} replies</span>
                             </button>

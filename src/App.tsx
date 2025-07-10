@@ -19,9 +19,6 @@ import LiveChat from "./pages/LiveChat";
 import AISpecialistProfile from "./pages/AISpecialistProfile";
 import PortfolioDetails from "./pages/PortfolioDetails";
 import LearnMore from "./pages/LearnMore";
-import Community from "./pages/Community";
-import Replies from "./pages/Replies";
-import DiscussionDetail from "./pages/DiscussionDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,9 +45,6 @@ const App: React.FC = () => {
             <Route path="/ai-specialist/:id" element={<AISpecialistProfile />} />
             <Route path="/portfolio/:id" element={<PortfolioDetails />} />
             <Route path="/learn-more" element={<LearnMore />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/replies" element={<Replies />} />
-            <Route path="/discussion/:id" element={<DiscussionDetail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
