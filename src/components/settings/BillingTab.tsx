@@ -25,25 +25,40 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
       id: 'free',
       name: 'Free Plan',
       price: 0,
-      tokens: 10000,
-      features: ['10,000 tokens per day', 'Access to all AI models', 'Basic support', 'Community access'],
-      current: true
+      tokens: 5000,
+      features: ['5,000 tokens per day', 'Access to all AI models', 'Basic support', 'Community access'],
+      current: false,
+      priceDisplay: 'Free'
     },
     {
       id: 'standard',
       name: 'Standard Plan',
-      price: 0.99,
-      tokens: 500000,
-      features: ['500,000 tokens', 'Access to all AI models', 'Priority support', 'Custom templates', 'Advanced analytics'],
-      current: false
+      price: 1500,
+      tokens: 100000,
+      features: ['100,000 tokens', 'Access to all AI models', 'Priority support', 'Custom templates', 'Advanced analytics'],
+      current: false,
+      priceDisplay: '₦1,500',
+      approximateUSD: '≈ $0.99'
     },
     {
       id: 'premium',
       name: 'Premium Plan',
-      price: 1.99,
-      tokens: 1000000,
-      features: ['1,000,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration', 'White-label solutions'],
-      current: false
+      price: 6500,
+      tokens: 500000,
+      features: ['500,000 tokens', 'Access to all AI models', '24/7 premium support', 'Custom integrations', 'Team collaboration', 'White-label solutions'],
+      current: false,
+      priceDisplay: '₦6,500',
+      approximateUSD: '≈ $4.30'
+    },
+    {
+      id: 'gold',
+      name: 'Gold Member',
+      price: 24000,
+      tokens: 2000000,
+      features: ['2,000,000 tokens', 'Access to all AI models', '24/7 VIP support', 'Priority processing', 'Custom AI training', 'Enterprise features', 'Dedicated account manager'],
+      current: false,
+      priceDisplay: '₦24,000',
+      approximateUSD: '≈ $15.99'
     }
   ];
 
@@ -66,50 +81,63 @@ const BillingTab = ({ availableTokens, plans, onPayNow, formatTokens }: BillingT
           <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
             <div 
               className="bg-blue-600 h-2 rounded-full" 
-              style={{ width: `${(availableTokens / 1000000) * 100}%` }}
+              style={{ width: `${(availableTokens / 10000000) * 100}%` }}
             ></div>
           </div>
         </CardContent>
       </Card>
 
       {/* Pricing Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {updatedPlans.map((plan) => (
-          <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''}`}>
-            {plan.current && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+          <Card key={plan.id} className={`relative ${plan.current ? 'ring-2 ring-blue-500' : ''} ${plan.id === 'gold' ? 'border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50' : ''}`}>
+            {plan.current && plan.id !== 'free' && (
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
                   Current Plan
                 </span>
               </div>
             )}
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <div className="text-3xl font-bold">
-                {plan.price === 0 ? 'Free' : `$${plan.price}`}
+            {plan.id === 'gold' && (
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap inline-flex items-center">
+                  <span className="mr-1">⭐</span>
+                  Gold Member
+                </span>
               </div>
+            )}
+            <CardHeader className="text-center pt-6">
+              <CardTitle className={`text-xl ${plan.id === 'gold' ? 'text-yellow-700' : ''}`}>{plan.name}</CardTitle>
+              <div className={`text-3xl font-bold ${plan.id === 'gold' ? 'text-yellow-600' : ''}`}>
+                {plan.priceDisplay}
+              </div>
+              {plan.approximateUSD && (
+                <div className="text-sm text-gray-500">
+                  {plan.approximateUSD}
+                </div>
+              )}
               <p className="text-gray-600">
-                {plan.id === 'free' ? '10K tokens/day' : formatTokens(plan.tokens) + ' tokens'}
+                {plan.id === 'free' ? '5K tokens/day' : formatTokens(plan.tokens) + ' tokens'}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <ul className="space-y-2">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center space-x-2">
-                    <Check className="w-4 h-4 text-green-500" />
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
               {plan.id !== 'free' && (
                 <Button 
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className={`w-full ${plan.id === 'gold' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white' : 'bg-blue-600 hover:bg-blue-700'}`}
                   onClick={() => onPayNow(plan.id)}
                 >
                   Pay Now
                 </Button>
               )}
-              {plan.current && (
+              {plan.current && plan.id !== 'free' && (
                 <div className="text-center text-sm text-gray-600">
                   Your current plan
                 </div>

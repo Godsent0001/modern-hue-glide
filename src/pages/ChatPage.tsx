@@ -1,7 +1,6 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Send, ArrowLeft, Star, Clock } from 'lucide-react';
+import { Send, ArrowLeft, Star, Clock, Upload, Coins, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Navigation from '@/components/Navigation';
@@ -15,8 +14,11 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [status, setStatus] = useState('active');
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [availableTokens] = useState(250000);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Get freelancer data from location state or create default
   const freelancer = location.state?.freelancer || {
     id: parseInt(id || '1'),
     name: 'AI Specialist',
@@ -27,7 +29,32 @@ const ChatPage = () => {
     description: 'Professional AI specialist ready to help with your project.'
   };
 
-  // Status cycling effect
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (date: Date) => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    } else {
+      return date.toLocaleDateString();
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   useEffect(() => {
     const statuses = ['active', 'pending', 'delivered'];
     let currentIndex = 0;
@@ -41,7 +68,6 @@ const ChatPage = () => {
   }, []);
 
   useEffect(() => {
-    // Initialize chat with welcome message
     setMessages([
       {
         id: 1,
@@ -54,19 +80,24 @@ const ChatPage = () => {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && uploadedFiles.length === 0) return;
 
     const userMessage = {
       id: messages.length + 1,
       sender: 'user',
-      content: newMessage,
-      timestamp: new Date()
+      content: newMessage || (uploadedFiles.length > 0 ? 'Uploaded files' : ''),
+      timestamp: new Date(),
+      files: uploadedFiles.map(file => ({
+        name: file.name,
+        size: file.size,
+        type: file.type
+      }))
     };
 
     setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
+    setUploadedFiles([]);
 
-    // Simulate AI response
     setTimeout(() => {
       const responses = [
         "That sounds like an interesting project! I have experience with similar work. Let me know more details about your requirements and timeline.",
@@ -88,9 +119,26 @@ const ChatPage = () => {
     }, 1000);
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setUploadedFiles(prev => [...prev, ...files]);
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleRating = (rating: number, review: string) => {
     console.log('Rating submitted:', { rating, review, freelancer: freelancer.id });
-    // In a real app, this would save the rating to your backend
+  };
+
+  const formatTokens = (tokens: number) => {
+    if (tokens >= 1000000) {
+      return `${(tokens / 1000000).toFixed(1)}M`;
+    } else if (tokens >= 1000) {
+      return `${(tokens / 1000).toFixed(0)}K`;
+    }
+    return tokens.toString();
   };
 
   const getStatusColor = () => {
@@ -116,9 +164,8 @@ const ChatPage = () => {
       <Navigation />
       
       <div className="pt-20 pb-4">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-6">
+        <div className="max-w-4xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="mb-4 sm:mb-6">
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
@@ -130,38 +177,45 @@ const ChatPage = () => {
             
             <Card>
               <CardHeader className="pb-4">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={freelancer.avatar}
-                    alt={freelancer.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-gray-900">{freelancer.name}</h1>
-                    <p className="text-blue-600 font-medium">{freelancer.specialty}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                        <span>{freelancer.rating}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
-                        <span>{freelancer.responseTime}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 ${getStatusColor()} rounded-full`}></div>
-                        <span>{getStatusText()}</span>
-                        {status === 'delivered' && (
-                          <Button 
-                            size="sm" 
-                            onClick={() => setShowRatingModal(true)}
-                            className="ml-2 bg-blue-600 hover:bg-blue-700"
-                          >
-                            Rate
-                          </Button>
-                        )}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
+                    <img
+                      src={freelancer.avatar}
+                      alt={freelancer.name}
+                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{freelancer.name}</h1>
+                      <p className="text-blue-600 font-medium text-sm sm:text-base truncate">{freelancer.specialty}</p>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 mr-1" />
+                          <span>{freelancer.rating}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                          <span className="hidden sm:inline">{freelancer.responseTime}</span>
+                          <span className="sm:hidden">{'< 1h'}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 ${getStatusColor()} rounded-full`}></div>
+                          <span>{getStatusText()}</span>
+                          {status === 'delivered' && (
+                            <Button 
+                              size="sm" 
+                              onClick={() => setShowRatingModal(true)}
+                              className="ml-2 bg-blue-600 hover:bg-blue-700 text-xs px-2 py-1"
+                            >
+                              Rate
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
+                  </div>
+                  <div className="flex items-center space-x-1 text-xs sm:text-sm bg-blue-100 text-blue-800 px-2 sm:px-3 py-1 rounded-full flex-shrink-0 self-start sm:self-center whitespace-nowrap">
+                    <Coins className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                    <span>{formatTokens(availableTokens)} tokens</span>
                   </div>
                 </div>
               </CardHeader>
@@ -169,42 +223,113 @@ const ChatPage = () => {
           </div>
 
           {/* Chat Interface */}
-          <Card className="h-96 flex flex-col">
-            <CardHeader className="pb-4">
-              <h2 className="text-lg font-semibold">Chat with {freelancer.name}</h2>
+          <Card className="flex flex-col" style={{ height: '70vh', maxHeight: '600px' }}>
+            <CardHeader className="pb-4 flex-shrink-0">
+              <h2 className="text-base sm:text-lg font-semibold">Chat with {freelancer.name}</h2>
             </CardHeader>
             
-            <CardContent className="flex-1 flex flex-col">
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.sender === 'user'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      {message.content}
+            <CardContent className="flex-1 flex flex-col p-3 sm:p-6 min-h-0">
+              {/* Messages - Scrollable */}
+              <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 mb-4 min-h-0">
+                {messages.map((message, index) => {
+                  const showDateSeparator = index === 0 || 
+                    formatDate(message.timestamp) !== formatDate(messages[index - 1].timestamp);
+                  
+                  return (
+                    <div key={message.id}>
+                      {showDateSeparator && (
+                        <div className="flex justify-center my-4">
+                          <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
+                            {formatDate(message.timestamp)}
+                          </span>
+                        </div>
+                      )}
+                      <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className="flex flex-col max-w-[85%] sm:max-w-xs lg:max-w-md">
+                          <div
+                            className={`px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
+                              message.sender === 'user'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-900'
+                            }`}
+                          >
+                            {message.files && message.files.length > 0 && (
+                              <div className="mb-2">
+                                {message.files.map((file: any, index: number) => (
+                                  <div key={index} className="text-xs opacity-75 mb-1">
+                                    📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            <div className="break-words">{message.content}</div>
+                          </div>
+                          <div className={`flex items-center space-x-1 mt-1 text-xs text-gray-500 ${
+                            message.sender === 'user' ? 'justify-end' : 'justify-start'
+                          }`}>
+                            <span>{formatTime(message.timestamp)}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+                <div ref={messagesEndRef} />
               </div>
 
-              {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="flex space-x-2">
+              {/* File Upload Preview */}
+              {uploadedFiles.length > 0 && (
+                <div className="mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg flex-shrink-0">
+                  <div className="text-xs sm:text-sm text-gray-600 mb-2">Files to upload:</div>
+                  <div className="space-y-2">
+                    {uploadedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between bg-white p-2 rounded border text-xs sm:text-sm">
+                        <div className="flex items-center space-x-2 min-w-0 flex-1">
+                          <span className="text-xs">📎</span>
+                          <span className="truncate">{file.name}</span>
+                          <span className="text-xs text-gray-500 flex-shrink-0">({(file.size / 1024).toFixed(1)} KB)</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                          className="p-1 flex-shrink-0"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Message Input - Fixed */}
+              <form onSubmit={handleSendMessage} className="flex space-x-2 flex-shrink-0">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleFileSelect}
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx,.txt"
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  className="px-2 flex-shrink-0"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-4 h-4" />
+                </Button>
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base min-w-0"
                 />
-                <Button type="submit">
+                <Button type="submit" className="flex-shrink-0">
                   <Send className="w-4 h-4" />
                 </Button>
               </form>

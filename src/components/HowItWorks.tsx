@@ -1,5 +1,6 @@
 
 import { Search, MessageSquare, CheckCircle, CreditCard } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const HowItWorks = () => {
   const steps = [
@@ -74,9 +75,11 @@ const HowItWorks = () => {
           <div className="bg-white rounded-2xl p-8 shadow-lg inline-block">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Get Started?</h3>
             <p className="text-gray-600 mb-6">Join thousands of businesses already working with AI specialists</p>
-            <button className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-              Start Your First Project
-            </button>
+            <Link to="/browse-ai">
+              <button className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                Start Your First Project
+              </button>
+            </Link>
           </div>
         </div>
       </div>
