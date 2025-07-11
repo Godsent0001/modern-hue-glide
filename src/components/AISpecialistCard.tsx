@@ -31,43 +31,42 @@ const AISpecialistCard = ({ freelancer }: AISpecialistCardProps) => {
   return (
     <>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-        <CardContent className="compact-p-4">
-          <div className="flex items-start compact-gap-3">
+        <CardContent className="p-6">
+          <div className="flex items-start space-x-4">
             <img
               src={freelancer.avatar}
               alt={freelancer.name}
-              className="w-12 h-12 rounded-full object-cover"
+              className="w-16 h-16 rounded-full object-cover"
             />
             <div className="flex-1">
-              <h3 className="compact-text-base font-semibold text-gray-900">{freelancer.name}</h3>
-              <p className="text-blue-600 font-medium compact-text-sm">{freelancer.specialty}</p>
-              <div className="flex items-center compact-gap-3 mt-1 compact-text-xs text-gray-600">
+              <h3 className="text-lg font-semibold text-gray-900">{freelancer.name}</h3>
+              <p className="text-blue-600 font-medium">{freelancer.specialty}</p>
+              <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
                 <div className="flex items-center">
-                  <Star className="w-3 h-3 text-yellow-500 mr-1" />
+                  <Star className="w-4 h-4 text-yellow-500 mr-1" />
                   <span>{freelancer.rating}</span>
                 </div>
                 <span>{freelancer.completedJobs} jobs</span>
                 <span>{freelancer.hourlyRate}</span>
               </div>
-              <p className="text-gray-700 compact-text-xs mt-1 line-clamp-2">
+              <p className="text-gray-700 text-sm mt-2 line-clamp-2">
                 {freelancer.description}
               </p>
-              <div className="flex compact-gap-2 mt-3">
+              <div className="flex space-x-2 mt-4">
                 <Button
                   size="sm"
                   onClick={() => setIsChatOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 compact-text-xs compact-p-2"
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
-                  <MessageCircle className="w-3 h-3 mr-1" />
+                  <MessageCircle className="w-4 h-4 mr-2" />
                   Chat
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={handleViewProfile}
-                  className="compact-text-xs compact-p-2"
                 >
-                  <Eye className="w-3 h-3 mr-1" />
+                  <Eye className="w-4 h-4 mr-2" />
                   View Profile
                 </Button>
               </div>
