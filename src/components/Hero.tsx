@@ -43,12 +43,10 @@ const Hero = () => {
               <ArrowRight className="ml-3 w-6 h-6" />
             </Button>
           </Link>
-          <Link to="/learn-more">
-            <Button size="lg" variant="outline" className="px-10 py-4 text-lg">
-              <Play className="mr-3 w-6 h-6" />
-              Learn More
-            </Button>
-          </Link>
+          <Button size="lg" variant="outline" className="px-10 py-4 text-lg" onClick={scrollToCategories}>
+            <Play className="mr-3 w-6 h-6" />
+            Learn More
+          </Button>
         </div>
 
         {/* Stats */}
