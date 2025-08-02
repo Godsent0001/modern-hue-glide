@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Star, Clock, MessageSquare, Users, Heart, Reply, Send, X, ArrowLeft, ChevronRight, MessageCircle } from 'lucide-react';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import CreateDiscussionModal from '@/components/CreateDiscussionModal';
+import BrowseNavigation from '@/components/browse/BrowseNavigation';
+import BrowseFilters from '@/components/browse/BrowseFilters';
+import AISpecialistGrid from '@/components/browse/AISpecialistGrid';
+import CommunitySection from '@/components/browse/CommunitySection';
+import SubcategoriesCard from '@/components/browse/SubcategoriesCard';
 
 const BrowseAI = () => {
   const [searchParams] = useSearchParams();
@@ -18,10 +18,6 @@ const BrowseAI = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState('all');
   const [selectedRating, setSelectedRating] = useState('all');
   const [activeTab, setActiveTab] = useState('browse');
-  const [selectedFreelancer, setSelectedFreelancer] = useState<any>(null);
-  const [showChat, setShowChat] = useState(false);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [newMessage, setNewMessage] = useState('');
   const [showSubcategories, setShowSubcategories] = useState(false);
   const [showCreateDiscussion, setShowCreateDiscussion] = useState(false);
   const [communitySearchTerm, setCommunitySearchTerm] = useState('');
@@ -315,6 +311,26 @@ const BrowseAI = () => {
     navigate('/browse-ai');
   };
 
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    if (category !== 'all') {
+      const categorySubcategories = {
+        'Content Writing': ['Blog Posts', 'Website Content', 'Articles', 'SEO Content'],
+        'Copywriting': ['Sales Pages', 'Ad Copy', 'Email Marketing Campaigns'],
+        'Business Writing': ['Business Proposals', 'Reports', 'Presentations']
+      };
+      const subs = categorySubcategories[category as keyof typeof categorySubcategories] || [];
+      setShowSubcategories(true);
+      navigate(`/browse-ai?category=${encodeURIComponent(category)}`, {
+        state: { subcategories: subs }
+      });
+    }
+  };
+
   const handleSubcategorySelect = (subcategory: string) => {
     setSelectedSubcategory(subcategory);
   };
@@ -327,38 +343,8 @@ const BrowseAI = () => {
     navigate(`/ai-specialist/${freelancer.id}`, { state: { freelancer } });
   };
 
-  const handleBackToHome = () => {
-    navigate('/');
-  };
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    const userMessage = {
-      id: messages.length + 1,
-      sender: 'user',
-      content: newMessage,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setNewMessage('');
-
-    setTimeout(() => {
-      const aiResponse = {
-        id: messages.length + 2,
-        sender: 'ai',
-        content: "That sounds like an interesting project! I have experience with similar work. Let me know more details about your requirements and timeline.",
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
-  };
-
   const handleCreateDiscussion = (discussion: { title: string; content: string; category: string }) => {
     console.log('New discussion created:', discussion);
-    // In a real app, this would be sent to the backend
   };
 
   const toggleReplies = (postId: number) => {
@@ -372,6 +358,13 @@ const BrowseAI = () => {
     setShowReplyForm(prev => ({
       ...prev,
       [postId]: !prev[postId]
+    }));
+  };
+
+  const handleReplyTextChange = (postId: number, text: string) => {
+    setReplyText(prev => ({
+      ...prev,
+      [postId]: text
     }));
   };
 
@@ -409,26 +402,12 @@ const BrowseAI = () => {
       
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {showSubcategories && selectedCategory !== 'all' && (
-            <div className="flex items-center mb-6 text-sm text-gray-600">
-              <button 
-                onClick={handleBackToHome}
-                className="flex items-center hover:text-blue-600 transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Home
-              </button>
-              <ChevronRight className="w-4 h-4 mx-2" />
-              <button 
-                onClick={handleBackToCategories}
-                className="hover:text-blue-600 transition-colors"
-              >
-                All Categories
-              </button>
-              <ChevronRight className="w-4 h-4 mx-2" />
-              <span className="text-gray-900 font-medium">{selectedCategory}</span>
-            </div>
-          )}
+          <BrowseNavigation
+            showSubcategories={showSubcategories}
+            selectedCategory={selectedCategory}
+            onBackToHome={handleBackToHome}
+            onBackToCategories={handleBackToCategories}
+          />
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -440,34 +419,12 @@ const BrowseAI = () => {
             <p className="text-gray-600">Connect with AI professionals tailored to your needs</p>
           </div>
 
-          {showSubcategories && subcategories.length > 0 && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="text-lg">Subcategories</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant={selectedSubcategory === 'all' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleSubcategorySelect('all')}
-                  >
-                    All {selectedCategory}
-                  </Button>
-                  {subcategories.map((subcategory: string, index: number) => (
-                    <Button
-                      key={index}
-                      variant={selectedSubcategory === subcategory ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => handleSubcategorySelect(subcategory)}
-                    >
-                      {subcategory}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <SubcategoriesCard
+            selectedCategory={selectedCategory}
+            subcategories={subcategories}
+            selectedSubcategory={selectedSubcategory}
+            onSubcategorySelect={handleSubcategorySelect}
+          />
 
           <div className="mb-8">
             <div className="border-b border-gray-200">
@@ -498,296 +455,42 @@ const BrowseAI = () => {
 
           {activeTab === 'browse' && (
             <>
-              {/* Search and Filters */}
-              <Card className="mb-8">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex-1 relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="text"
-                        placeholder="Search specialists..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                      <Filter className="text-gray-500 w-5 h-5 flex-shrink-0" />
-                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                        {!showSubcategories && (
-                          <select
-                            value={selectedCategory}
-                            onChange={(e) => {
-                              setSelectedCategory(e.target.value);
-                              if (e.target.value !== 'all') {
-                                // Simulate getting subcategories for the selected category
-                                const categorySubcategories = {
-                                  'Content Writing': ['Blog Posts', 'Website Content', 'Articles', 'SEO Content'],
-                                  'Copywriting': ['Sales Pages', 'Ad Copy', 'Email Marketing Campaigns'],
-                                  'Business Writing': ['Business Proposals', 'Reports', 'Presentations']
-                                };
-                                const subs = categorySubcategories[e.target.value as keyof typeof categorySubcategories] || [];
-                                setShowSubcategories(true);
-                                // Update URL to include subcategories
-                                navigate(`/browse-ai?category=${encodeURIComponent(e.target.value)}`, {
-                                  state: { subcategories: subs }
-                                });
-                              }
-                            }}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                          >
-                            {categories.map(category => (
-                              <option key={category} value={category}>
-                                {category === 'all' ? 'All Categories' : category}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                        <select
-                          value={selectedRating}
-                          onChange={(e) => setSelectedRating(e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                        >
-                          {ratingOptions.map(option => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <BrowseFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                selectedRating={selectedRating}
+                setSelectedRating={setSelectedRating}
+                showSubcategories={showSubcategories}
+                categories={categories}
+                ratingOptions={ratingOptions}
+                onCategoryChange={handleCategoryChange}
+              />
 
-              {/* AI Specialists Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredFreelancers.map((freelancer) => (
-                  <Card key={freelancer.id} className="hover:shadow-lg transition-shadow duration-200">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-3 flex-1 min-w-0">
-                          <div className="relative flex-shrink-0">
-                            <img
-                              src={freelancer.avatar}
-                              alt={freelancer.name}
-                              className="w-12 h-12 rounded-full object-cover"
-                            />
-                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${freelancer.online ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <CardTitle className="text-lg truncate">{freelancer.name}</CardTitle>
-                            <p className="text-sm text-blue-600 truncate">{freelancer.specialty}</p>
-                            <p className="text-xs text-gray-500 truncate">{freelancer.subSpecialty}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600 flex-shrink-0 ml-2">
-                          <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                          <span>{freelancer.rating}</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <p className="text-gray-600 text-sm">{freelancer.description}</p>
-
-                      <div className="flex flex-wrap gap-2">
-                        {freelancer.skills.map((skill, index) => (
-                          <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center justify-between text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          <span>{freelancer.responseTime}</span>
-                        </div>
-                        <span className="font-medium text-green-600">FREE</span>
-                      </div>
-
-                      <div className="flex space-x-2 pt-2">
-                        <Button 
-                          variant="outline" 
-                          className="flex-1" 
-                          size="sm"
-                          onClick={() => handleViewProfile(freelancer)}
-                        >
-                          View Profile
-                        </Button>
-                        <Button 
-                          className="flex-1" 
-                          size="sm"
-                          onClick={() => handleHire(freelancer)}
-                        >
-                          <MessageCircle className="w-4 h-4 mr-1" />
-                          Message
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <AISpecialistGrid
+                specialists={filteredFreelancers}
+                onViewProfile={handleViewProfile}
+                onHire={handleHire}
+              />
             </>
           )}
 
           {activeTab === 'community' && (
-            <div className="space-y-6">
-              {/* Community Header */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h2 className="text-xl font-semibold">Community Discussions</h2>
-                      <p className="text-gray-600">Connect with other users and share experiences</p>
-                    </div>
-                    <Button onClick={() => setShowCreateDiscussion(true)}>
-                      Start Discussion
-                    </Button>
-                  </div>
-                  
-                  {/* Search Bar for Community */}
-                  <div className="mb-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <Input
-                        type="text"
-                        placeholder="Search discussions..."
-                        value={communitySearchTerm}
-                        onChange={(e) => setCommunitySearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-6 text-sm text-gray-600">
-                    <div className="flex items-center">
-                      <Users className="w-4 h-4 mr-1" />
-                      <span>2,847 members</span>
-                    </div>
-                    <div className="flex items-center">
-                      <MessageSquare className="w-4 h-4 mr-1" />
-                      <span>156 discussions</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Community Posts */}
-              <div className="space-y-4">
-                {filteredCommunityPosts.map((post) => (
-                  <Card key={post.id} className="hover:shadow-md transition-shadow duration-200">
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-4">
-                        <img
-                          src={post.avatar}
-                          alt={post.author}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <div>
-                              <h3 className="font-medium text-gray-900">{post.title}</h3>
-                              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <span>{post.author}</span>
-                                <span>•</span>
-                                <span>{post.time}</span>
-                                <span>•</span>
-                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
-                                  {post.category}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 mb-3">{post.content}</p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                            <button className="flex items-center hover:text-red-600 transition-colors">
-                              <Heart className="w-4 h-4 mr-1" />
-                              <span>{post.likes}</span>
-                            </button>
-                            <button 
-                              className="flex items-center hover:text-blue-600 transition-colors"
-                              onClick={() => toggleReplies(post.id)}
-                            >
-                              <MessageSquare className="w-4 h-4 mr-1" />
-                              <span>{replies[post.id]?.length || 0} replies</span>
-                            </button>
-                            <button 
-                              className="flex items-center hover:text-green-600 transition-colors"
-                              onClick={() => toggleReplyForm(post.id)}
-                            >
-                              <Reply className="w-4 h-4 mr-1" />
-                              <span>Reply</span>
-                            </button>
-                          </div>
-
-                          {/* Reply Form */}
-                          {showReplyForm[post.id] && (
-                            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                              <Textarea
-                                placeholder="Write your reply..."
-                                value={replyText[post.id] || ''}
-                                onChange={(e) => setReplyText(prev => ({
-                                  ...prev,
-                                  [post.id]: e.target.value
-                                }))}
-                                className="mb-3"
-                                rows={3}
-                              />
-                              <div className="flex space-x-2">
-                                <Button 
-                                  size="sm"
-                                  onClick={() => handleReplySubmit(post.id)}
-                                  disabled={!replyText[post.id]?.trim()}
-                                >
-                                  <Send className="w-4 h-4 mr-1" />
-                                  Post Reply
-                                </Button>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => toggleReplyForm(post.id)}
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Replies Section */}
-                          {showReplies[post.id] && replies[post.id] && (
-                            <div className="mt-4 space-y-3">
-                              <div className="border-t pt-3">
-                                <h4 className="text-sm font-medium text-gray-700 mb-3">Replies</h4>
-                                {replies[post.id].map((reply) => (
-                                  <div key={reply.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                    <img
-                                      src={reply.avatar}
-                                      alt={reply.author}
-                                      className="w-8 h-8 rounded-full object-cover"
-                                    />
-                                    <div className="flex-1">
-                                      <div className="flex items-center space-x-2 text-sm">
-                                        <span className="font-medium text-gray-900">{reply.author}</span>
-                                        <span className="text-gray-500">•</span>
-                                        <span className="text-gray-500">{reply.time}</span>
-                                      </div>
-                                      <p className="text-gray-700 text-sm mt-1">{reply.content}</p>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+            <CommunitySection
+              posts={filteredCommunityPosts}
+              searchTerm={communitySearchTerm}
+              onSearchChange={setCommunitySearchTerm}
+              onCreateDiscussion={() => setShowCreateDiscussion(true)}
+              showReplies={showReplies}
+              showReplyForm={showReplyForm}
+              replyText={replyText}
+              replies={replies}
+              onToggleReplies={toggleReplies}
+              onToggleReplyForm={toggleReplyForm}
+              onReplyTextChange={handleReplyTextChange}
+              onReplySubmit={handleReplySubmit}
+            />
           )}
         </div>
       </div>
